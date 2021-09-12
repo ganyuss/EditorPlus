@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,44 +11,66 @@ namespace EditorPlus.Editor {
     public class ButtonDrawer : IFrameworkEditor {
 
         private struct Button {
-            public MethodInfo Method;
+            public Action Action;
             public ButtonAttribute Attribute;
             public List<Decorator> Decorators;
+            public string Name;
 
-            public string Name => Attribute.Name ?? Method.Name;
+            public bool Equals(Button other) {
+                return Name == other.Name
+                    && Attribute.Size == other.Attribute.Size
+                    && Decorators.Select(d => d.GetType()).SequenceEqual(other.Decorators.Select(d => d.GetType()));
+            }
+
+            public void Merge(Button other) {
+                Action += other.Action;
+            }
         }
 
         private readonly List<Button> ButtonsToDraw = new List<Button>();
 
         public void OnEnable(IEnumerable<Object> targets) {
-            List<MethodInfo> methods = null;
 
             foreach (var target in targets) {
-                if (methods == null) {
-                    methods = GetAllButtonMethods(target);
-                }
-                else {
-                    List<MethodInfo> otherMethods = GetAllButtonMethods(target);
-                    methods = methods.Where(method1 => otherMethods.Any(method2 => method1.Name == method2.Name)).ToList();
-                }
-            }
-
-            if (methods == null) return;
-
-            foreach (MethodInfo method in methods) {
-                if (method.IsConstructor) continue;
+                List<MethodInfo> methods = GetAllButtonMethods(target);
                 
-                var buttonAttribute = method.GetCustomAttribute<ButtonAttribute>();
+                foreach (MethodInfo method in methods) {
 
-                if (buttonAttribute == null)
-                    continue;
+                    var buttonAttribute = method.GetCustomAttribute<ButtonAttribute>();
 
-                ButtonsToDraw.Add(new Button {
-                    Method = method, 
-                    Attribute = buttonAttribute,
-                    Decorators = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(method)
-                });
+                    if (buttonAttribute == null)
+                        continue;
+
+                    if (!IsSuitableForButton(method)) {
+                        Debug.LogError(
+                            $"Method \"{method.Name}\" got Button attribute, while not suitable for button calls");
+                        continue;
+                    }
+
+                    ButtonsToDraw.Add(new Button {
+                        Name = buttonAttribute.Name ?? method.Name,
+                        Attribute = buttonAttribute,
+                        Decorators = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(method),
+                        Action = (Action) method.CreateDelegate(typeof(Action), target)
+                    });
+                }
+
+                for (int i = 0; i < ButtonsToDraw.Count; i++) {
+                    Button currentButton = ButtonsToDraw[i];
+
+                    for (int j = ButtonsToDraw.Count - 1; j > i; j--) {
+                        if (currentButton.Equals(ButtonsToDraw[j])) {
+                            currentButton.Merge(ButtonsToDraw[j]);
+                        }
+                        
+                        ButtonsToDraw.RemoveAt(j);
+                    }
+                }
             }
+        }
+
+        private bool IsSuitableForButton(MethodInfo method) {
+            return !method.IsAbstract && !method.IsConstructor && method.GetParameters().Length == 0;
         }
 
         private List<MethodInfo> GetAllButtonMethods(Object target) {
@@ -76,9 +99,7 @@ namespace EditorPlus.Editor {
 
             Rect buttonRect = new Rect(currentRect) {height = GetButtonHeight(button.Attribute.Size)};
             if (GUI.Button(buttonRect, button.Name)) {
-                foreach (var target in targets) {
-                    button.Method.Invoke(target, new object[0]);
-                }
+                button.Action.Invoke();
             }
             currentRect.ToBottomOf(buttonRect);
             
