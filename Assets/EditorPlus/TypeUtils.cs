@@ -21,6 +21,21 @@ namespace EditorPlus {
         }
         
         [NotNull]
+        public static Type[] GetAllTypesImplementing(Type interfaceType) {
+
+            List<Type> output = new List<Type>();
+            //parentType.gene
+            
+            foreach (Type type in GetAllTypes()) {
+                if (type.GetInterfaces().Contains(interfaceType)) {
+                    output.Add(type);
+                }
+            }
+
+            return output.ToArray();
+        }
+        
+        [NotNull]
         public static Type[] GetAllTypesInheritingFrom(Type parentType) {
 
             List<Type> output = new List<Type>();
