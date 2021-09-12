@@ -29,7 +29,7 @@ namespace EditorPlus.Editor {
 
         private readonly List<Button> ButtonsToDraw = new List<Button>();
 
-        public void OnEnable(IEnumerable<Object> targets) {
+        public void OnEnable(List<Object> targets) {
 
             foreach (var target in targets) {
                 List<MethodInfo> methods = GetAllButtonMethods(target);
@@ -81,9 +81,9 @@ namespace EditorPlus.Editor {
                 .ToList();
         } 
 
-        public void OnInspectorGUIBefore(IEnumerable<Object> targets) { }
+        public void OnInspectorGUIBefore(List<Object> targets) { }
 
-        public void OnInspectorGUIAfter(IEnumerable<Object> targets) {
+        public void OnInspectorGUIAfter(List<Object> targets) {
 
             foreach (var button in ButtonsToDraw) {
                 Draw(button, targets);

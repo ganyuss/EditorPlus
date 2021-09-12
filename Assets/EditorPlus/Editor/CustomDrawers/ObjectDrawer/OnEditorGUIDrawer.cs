@@ -10,7 +10,7 @@ namespace EditorPlus.Editor {
     public class OnEditorGUIDrawer : IFrameworkEditor {
 
         private List<Action> EditorCallbacks = new List<Action>();
-        public void OnEnable(IEnumerable<Object> targets) {
+        public void OnEnable(List<Object> targets) {
             foreach (var target in targets) {
                 EditorCallbacks.AddRange(GetEditorCallbacks(target));
             }
@@ -23,7 +23,7 @@ namespace EditorPlus.Editor {
             List<MethodInfo> methods = obj.GetType().GetMethods(flags)
                 .Where(methodInfo => methodInfo.GetCustomAttribute<OnEditorGUIAttribute>() != null).ToList();
 
-            for (int i = methods.Count - 1; i >= 0; i++) {
+            for (int i = methods.Count - 1; i >= 0; i--) {
                 if (!IsSuitableForEditorGUI(methods[i])) {
                     Debug.LogError($"Method {methods[i].Name} got the OnEditorGUI attribute, while not suitable for it.");
                     methods.RemoveAt(i);
@@ -38,10 +38,10 @@ namespace EditorPlus.Editor {
             return !method.IsConstructor && method.GetParameters().Length == 0;
         }
 
-        public void OnInspectorGUIBefore(IEnumerable<Object> targets) 
+        public void OnInspectorGUIBefore(List<Object> targets) 
         { }
 
-        public void OnInspectorGUIAfter(IEnumerable<Object> targets) {
+        public void OnInspectorGUIAfter(List<Object> targets) {
             foreach (var editorCallback in EditorCallbacks) {
                 editorCallback.Invoke();
             }

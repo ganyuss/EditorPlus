@@ -7,9 +7,9 @@ using UnityEngine;
 namespace EditorPlus.Editor {
 
     public interface IFrameworkEditor {
-        public void OnEnable(IEnumerable<Object> targets);
-        public void OnInspectorGUIBefore(IEnumerable<Object> targets);
-        public void OnInspectorGUIAfter(IEnumerable<Object> targets);
+        public void OnEnable(List<Object> targets);
+        public void OnInspectorGUIBefore(List<Object> targets);
+        public void OnInspectorGUIAfter(List<Object> targets);
     }
     
     [CustomEditor(typeof(Object), true)]
@@ -22,20 +22,25 @@ namespace EditorPlus.Editor {
                 .Select(TypeUtils.CreateInstance<IFrameworkEditor>)
                 .ToList();
             
+            List<Object> targetList = targets.ToList();
+            
             foreach (var editor in Editors) {
-                editor.OnEnable(targets);
+                editor.OnEnable(targetList);
             }
         }
         
         public override void OnInspectorGUI() {
+            serializedObject.Update();
+            List<Object> targetList = targets.ToList();
+            
             foreach (var editor in Editors) {
-                editor.OnInspectorGUIBefore(targets);
+                editor.OnInspectorGUIBefore(targetList);
             }
 
             DrawDefaultInspector();
             
             foreach (var editor in Editors) {
-                editor.OnInspectorGUIAfter(targets);
+                editor.OnInspectorGUIAfter(targetList);
             }
         }
     }
