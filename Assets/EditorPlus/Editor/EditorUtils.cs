@@ -6,6 +6,8 @@ namespace EditorPlus.Editor {
     
     public static class EditorUtils {
 
+        public const string MultipleValueString = "—";
+
         public static void ToBottomOf(this ref Rect rect, Rect otherRect) {
             rect.y += otherRect.height;
             rect.height -= otherRect.height;

@@ -27,8 +27,6 @@ namespace EditorPlus.Editor {
                 position.ToBottomOf(labelRect);
             }
 
-            string textValue = property.stringValue;
-
             /*
              FIXME: I could not make the scrollview work with textarea
             if (GetTextHeightInLines(textValue) > CurrentAttribute.maxLines) {
@@ -44,15 +42,29 @@ namespace EditorPlus.Editor {
             else {
             */
                 Rect textAreaRect = new Rect(position) {height = GetTextAreaHeight(property.stringValue)};
-                textValue = EditorGUI.TextArea(textAreaRect, textValue);
+                DrawTextArea(textAreaRect, property);
                 
                 position.ToBottomOf(textAreaRect);
             //}
 
-            if (textValue != property.stringValue)
-                property.stringValue = textValue;
-
             return position;
+        }
+
+
+        public static void DrawTextArea(Rect rect, SerializedProperty property) {
+            string value;
+            if (property.hasMultipleDifferentValues) {
+                value = EditorUtils.MultipleValueString;
+            }
+            else {
+                value = property.stringValue;
+            }
+            
+            string newValue = EditorGUI.TextArea(rect, value);
+            
+            if (newValue != value && 
+                (!property.hasMultipleDifferentValues || newValue != EditorUtils.MultipleValueString && !string.IsNullOrEmpty(newValue)))
+                property.stringValue = newValue;
         }
 
         protected override bool IsPropertyValid(SerializedProperty property, GUIContent label) {

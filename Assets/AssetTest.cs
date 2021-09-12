@@ -13,7 +13,7 @@ public class AssetTest : ScriptableObject {
     [HelpBox("This field is convenient", HelpBoxType.Info)]
     [CustomSpace(20, 10)]
     [MinMaxSlider(0, 20)]
-    public MinMaxFloat MinMax;
+    public MinMaxInt MinMax;
 
     [CustomSpace(10, 10)]
     [TextArea(2, 3)]
@@ -21,6 +21,8 @@ public class AssetTest : ScriptableObject {
     [CustomSpace(10 ,10)]
     [Multiline(5)]
     public string Multiline;
+    [Multiline(5)]
+    public string Comparison;
     [CustomSpace(10 ,10)]
     [Range(0, 100)]
     public float Range;

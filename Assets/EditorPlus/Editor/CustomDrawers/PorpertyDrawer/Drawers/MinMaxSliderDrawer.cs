@@ -43,25 +43,38 @@ namespace EditorPlus.Editor {
 
             float minValue;
             float maxValue;
-            
-            if (property.type == nameof(MinMaxInt)) {
-                minValue = minProperty.intValue;
-                maxValue = maxProperty.intValue;
+            bool sliderDisabled = minProperty.hasMultipleDifferentValues
+                                  || maxProperty.hasMultipleDifferentValues;
+
+
+            if (sliderDisabled) {
+                minValue = float.NegativeInfinity;
+                maxValue = float.PositiveInfinity;
             }
             else {
-                minValue = minProperty.floatValue;
-                maxValue = maxProperty.floatValue;
+                if (property.type == nameof(MinMaxInt)) {
+                    minValue = minProperty.intValue;
+                    maxValue = maxProperty.intValue;
+                }
+                else {
+                    minValue = minProperty.floatValue;
+                    maxValue = maxProperty.floatValue;
+                }
             }
-            
-            float oldMinValue = minValue;
-            float oldMaxValue = maxValue;
-
-            MinMaxSliderAttribute minMaxAttribute = CurrentAttribute;
 
             Rect sliderPosition = new Rect(position);
             sliderPosition.width -= rightFieldSize*2 + rightMargin*2;
             sliderPosition.height = EditorGUIUtility.singleLineHeight;
-            EditorGUI.MinMaxSlider(sliderPosition, label, ref minValue, ref maxValue, minMaxAttribute.SliderMin, minMaxAttribute.SliderMax);
+            
+            EditorGUI.BeginDisabledGroup(sliderDisabled);
+            EditorGUI.MinMaxSlider(sliderPosition, label, ref minValue, ref maxValue, CurrentAttribute.SliderMin, CurrentAttribute.SliderMax);
+            EditorGUI.EndDisabledGroup();
+            
+            if (EditorGUI.EndChangeCheck()) {
+                SetValue(property, minProperty, maxProperty, minValue, maxValue);
+            }
+            
+            EditorGUI.BeginChangeCheck();
 
             Rect firstFieldPosition = new Rect(sliderPosition);
             firstFieldPosition.xMin += sliderPosition.width + rightMargin;
@@ -71,39 +84,53 @@ namespace EditorPlus.Editor {
             secondFieldPosition.xMin += rightFieldSize + rightMargin;
             secondFieldPosition.width = rightFieldSize;
             
-            if (property.type == nameof(MinMaxInt)) {
-                minValue = EditorGUI.IntField(firstFieldPosition, Mathf.RoundToInt(minValue));
-                maxValue = EditorGUI.IntField(secondFieldPosition, Mathf.RoundToInt(maxValue));
-            }
-            else {
-                minValue = EditorGUI.FloatField(firstFieldPosition, minValue);
-                maxValue = EditorGUI.FloatField(secondFieldPosition, maxValue);
-            }
+            EditorGUI.DelayedIntField(firstFieldPosition, minProperty, GUIContent.none);
+            EditorGUI.DelayedIntField(secondFieldPosition, maxProperty, GUIContent.none);
 
             if (EditorGUI.EndChangeCheck()) {
 
-                minValue = Mathf.Clamp(minValue, minMaxAttribute.SliderMin, minMaxAttribute.SliderMax);
-                maxValue = Mathf.Clamp(maxValue, minMaxAttribute.SliderMin, minMaxAttribute.SliderMax);
-                
-                if (minValue > maxValue) {
-                    if (oldMinValue != minValue)
-                        minValue = maxValue;
-                    else if (oldMaxValue != maxValue)
-                        maxValue = minValue;
-                }
-
+                float newMinValue;
+                float newMaxValue;
+                    
                 if (property.type == nameof(MinMaxInt)) {
-                    minProperty.intValue = Mathf.RoundToInt(minValue);
-                    maxProperty.intValue = Mathf.RoundToInt(maxValue);
+                    newMinValue = minProperty.intValue;
+                    newMaxValue = maxProperty.intValue;
                 }
                 else {
-                    minProperty.floatValue = minValue;
-                    maxProperty.floatValue = maxValue;
+                    newMinValue = minProperty.floatValue;
+                    newMaxValue = maxProperty.floatValue;
                 }
+                
+                newMinValue = Mathf.Clamp(newMinValue, CurrentAttribute.SliderMin, CurrentAttribute.SliderMax);
+                newMaxValue = Mathf.Clamp(newMaxValue, CurrentAttribute.SliderMin, CurrentAttribute.SliderMax);
+                
+                if (newMinValue > newMaxValue) {
+                    if (minValue != newMinValue)
+                        newMaxValue = newMinValue;
+                    else if (maxValue != newMaxValue)
+                        newMinValue = newMaxValue;
+                }
+                
+                SetValue(property, minProperty, maxProperty, newMinValue, newMaxValue);
             }
 
             position.ToBottomOf(sliderPosition);
             return position;
+        }
+
+
+        private void SetValue(
+            SerializedProperty property,
+            SerializedProperty minProperty, SerializedProperty maxProperty, 
+            float min, float max) {
+            if (property.type == nameof(MinMaxInt)) {
+                minProperty.intValue = Mathf.RoundToInt(min);
+                maxProperty.intValue = Mathf.RoundToInt(max);
+            }
+            else {
+                minProperty.floatValue = min;
+                maxProperty.floatValue = max;
+            }
         }
 
         protected override bool IsPropertyValid(SerializedProperty property, GUIContent label) {

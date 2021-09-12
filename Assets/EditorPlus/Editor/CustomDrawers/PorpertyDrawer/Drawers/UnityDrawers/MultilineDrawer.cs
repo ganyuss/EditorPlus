@@ -14,7 +14,7 @@ namespace EditorPlus.Editor {
             Rect propertyRect = new Rect(position) {height = GetRealHeight(property, label)};
 
             Rect textAreaRect = EditorGUI.PrefixLabel(propertyRect, label);
-            property.stringValue = EditorGUI.TextArea(textAreaRect, property.stringValue);
+            TextAreaDrawer.DrawTextArea(textAreaRect, property);
             
             position.ToBottomOf(propertyRect);
             return position;
