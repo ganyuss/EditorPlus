@@ -23,5 +23,11 @@ MonoBehaviour:
   minMax0: 0
   testTextArea: 
   comparison: 
-  testMultiline: 
+  testMultiline: '
+
+
+
+
+
+'
   comparison2: 
