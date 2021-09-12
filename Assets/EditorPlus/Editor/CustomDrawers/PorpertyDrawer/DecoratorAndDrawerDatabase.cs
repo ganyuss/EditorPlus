@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -46,6 +47,20 @@ namespace EditorPlus.Editor {
             bool ok = DrawerFactoryDictionary.TryGetValue(attributeType, out var factory);
             drawer = factory?.Invoke();
             return ok;
+        }
+
+        public static List<Decorator> GetAllDecoratorsFor(MemberInfo member) {
+            List<Decorator> result = new List<Decorator>();
+            
+            foreach (var attribute in member.GetCustomAttributes()) {
+                if (TryGetDecoratorFor(attribute.GetType(), out var decorator)) {
+                    decorator.SetAttribute(attribute);
+                    result.Add(decorator);
+                }
+            }
+
+            result.Sort((d1, d2) => d1.Order - d2.Order);
+            return result;
         }
         
         

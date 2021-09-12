@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace EditorPlus {
@@ -14,6 +15,10 @@ namespace EditorPlus {
         After
     }
     
+    [AttributeUsage(
+        AttributeTargets.Method 
+        | AttributeTargets.Field
+        | AttributeTargets.Property)]
     public class HelpBoxAttribute : PropertyAttribute {
         public HelpBoxType Type = HelpBoxType.None;
         public HelpBoxPosition Position = HelpBoxPosition.Before;

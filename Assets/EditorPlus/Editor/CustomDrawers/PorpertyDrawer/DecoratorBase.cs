@@ -48,16 +48,20 @@ namespace EditorPlus.Editor {
         public virtual OrderValue Order => OrderValue.Regular;
 
         public virtual bool ShowProperty => true;
+
+        public float GetHeight() => GetHeight(null, null);
+        public Rect OnBeforeGUI(Rect rect) => OnBeforeGUI(rect, null, null);
+        public Rect OnAfterGUI(Rect rect) => OnAfterGUI(rect, null, null);
         
-        public virtual float GetHeight(SerializedProperty property, GUIContent label) {
+        public virtual float GetHeight([CanBeNull] SerializedProperty property, [CanBeNull] GUIContent label) {
             return 0;
         }
-
-        public virtual Rect OnBeforeGUI(Rect position, SerializedProperty property, GUIContent label) {
+        
+        public virtual Rect OnBeforeGUI(Rect position, [CanBeNull] SerializedProperty property, [CanBeNull] GUIContent label) {
             return position;
         }
-
-        public virtual Rect OnAfterGUI(Rect position, SerializedProperty property, GUIContent label) {
+        
+        public virtual Rect OnAfterGUI(Rect position, [CanBeNull] SerializedProperty property, [CanBeNull] GUIContent label) {
             return position;
         }
 
