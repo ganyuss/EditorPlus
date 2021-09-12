@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,13 +14,14 @@ namespace EditorPlus.Editor {
     
     [CustomEditor(typeof(Object), true)]
     [CanEditMultipleObjects]
-    public class CustomObjectDrawer : UnityEditor.Editor
-    {
-        private List<IFrameworkEditor> Editors = new List<IFrameworkEditor> {
-            new ButtonFrameworkEditor()
-        };
+    public class CustomObjectDrawer : UnityEditor.Editor {
+        private List<IFrameworkEditor> Editors;
 
         private void OnEnable() {
+            Editors = TypeUtils.GetAllTypesImplementing(typeof(IFrameworkEditor))
+                .Select(TypeUtils.CreateInstance<IFrameworkEditor>)
+                .ToList();
+            
             foreach (var editor in Editors) {
                 editor.OnEnable(targets);
             }
