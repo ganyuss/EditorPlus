@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 
@@ -19,10 +20,22 @@ namespace EditorPlus.Editor {
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
                                        BindingFlags.NonPublic;
 
-            return obj.GetType().GetMethods(flags)
-                .Where(methodInfo => methodInfo.GetCustomAttribute<OnEditorGUIAttribute>() != null)
-                .Select(methodInfo => (Action)methodInfo.CreateDelegate(typeof(Action), obj))
+            List<MethodInfo> methods = obj.GetType().GetMethods(flags)
+                .Where(methodInfo => methodInfo.GetCustomAttribute<OnEditorGUIAttribute>() != null).ToList();
+
+            for (int i = methods.Count - 1; i >= 0; i++) {
+                if (!IsSuitableForEditorGUI(methods[i])) {
+                    Debug.LogError($"Method {methods[i].Name} got the OnEditorGUI attribute, while not suitable for it.");
+                    methods.RemoveAt(i);
+                }
+            }
+            
+            return methods.Select(methodInfo => (Action)methodInfo.CreateDelegate(typeof(Action), obj))
                 .ToList();
+        }
+
+        private bool IsSuitableForEditorGUI(MethodInfo method) {
+            return !method.IsConstructor && method.GetParameters().Length == 0;
         }
 
         public void OnInspectorGUIBefore(IEnumerable<Object> targets) 
