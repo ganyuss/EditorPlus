@@ -64,21 +64,25 @@ namespace EditorPlus.Editor {
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
             List<Decorator> decorators = GetDecoratorsToUse(property);
+
+            if (!decorators.All(decorator => decorator.ShowProperty))
+                return 0;
             
             float height = 0;
-            bool addDefaultHeight = true;
             foreach (var decorator in decorators) {
                 height += decorator.GetHeight(property, label);
-                addDefaultHeight = addDefaultHeight && decorator.ShowProperty;
             }
 
-            float propertyHeight = addDefaultHeight ? GetPropertyDrawer(property).GetHeight(property, label) : 0;
+            float propertyHeight = GetPropertyDrawer(property).GetHeight(property, label);
             return height + propertyHeight;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
             List<Decorator> decorators = GetDecoratorsToUse(property);
             List<Decorator> decoratorsReversed = GetDecoratorsToUseReversed(property);
+            
+            if (!decorators.All(decorator => decorator.ShowProperty))
+                return;
             
             foreach (var decorator in decorators) {
                 position = decorator.OnBeforeGUI(position, property, label);
