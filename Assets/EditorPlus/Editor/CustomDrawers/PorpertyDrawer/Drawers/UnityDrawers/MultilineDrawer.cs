@@ -13,7 +13,7 @@ namespace EditorPlus.Editor {
         protected override Rect OnRealGUI(Rect position, SerializedProperty property, GUIContent label) {
             Rect propertyRect = new Rect(position) {height = GetRealHeight(property, label)};
 
-            Rect textAreaRect = EditorGUI.PrefixLabel(propertyRect, label);
+            Rect textAreaRect = label != null ? EditorGUI.PrefixLabel(propertyRect, label) : propertyRect;
             TextAreaDrawer.DrawTextArea(textAreaRect, property);
             
             position.ToBottomOf(propertyRect);
