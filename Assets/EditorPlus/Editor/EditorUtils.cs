@@ -50,7 +50,10 @@ namespace EditorPlus.Editor {
 
                 // If the calculated HelpBox is less than our minimum height we use this to calculate the returned
                 // height instead.
-                return height > minHeight ? height : minHeight;
+                if (type != HelpBoxType.None && height < minHeight)
+                    height = minHeight;
+                
+                return height;
             }
             
             public static Rect GetRect(Rect position, string boxText, HelpBoxType type) {
