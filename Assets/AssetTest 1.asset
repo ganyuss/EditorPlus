@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: be92026289df9674e8760ea50b3ce186, type: 3}
-  m_Name: 
+  m_Name: AssetTest 1
   m_EditorClassIdentifier: 
   Test: 0
   MinMax:
@@ -21,9 +21,17 @@ MonoBehaviour:
   Comparison: 
   Range: 0
   PlayModeOnly: 0
+  field: 
+  Disabled: 0
   ListDrawer:
   - 
   - 
   EEEEEEEEEE:
-    W: []
+    W:
+    - VSTR: 
+      wow: 0
+      disabled: 0
+      values: 
     str: 
+    str2: 
+    zzzz: 0

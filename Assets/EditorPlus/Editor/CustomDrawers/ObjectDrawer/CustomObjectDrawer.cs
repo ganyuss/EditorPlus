@@ -144,10 +144,10 @@ namespace EditorPlus.Editor {
             || !property.isArray && HasCustomAttributes(property);
 
         private bool HasCustomAttributes(SerializedProperty property) {
-            FieldInfo fieldInfo = property.serializedObject.targetObject.GetType().GetField(property.propertyPath);
+            EditorUtils.GetMemberInfo(property, out _, out var targetMemberInfo);
 
-            List<Attribute> customAttributes = fieldInfo?.GetCustomAttributes().ToList();
-            return fieldInfo != null && (customAttributes.Count > 2 || customAttributes.Count > 1 && customAttributes[0].GetType() != typeof(SerializeField));
+            List<Attribute> customAttributes = targetMemberInfo?.GetCustomAttributes().ToList();
+            return targetMemberInfo != null && (customAttributes.Count > 2 || customAttributes.Count > 1 && customAttributes[0].GetType() != typeof(SerializeField));
         }
 
         private void DrawList(SerializedProperty property, Rect rect) {
@@ -160,7 +160,9 @@ namespace EditorPlus.Editor {
             private ListPropertyDrawer ActualDrawer;
             
             public ListDrawer(SerializedProperty property) {
-                Decorators = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(property.GetFieldInfo());
+                
+                EditorUtils.GetMemberInfo(property, out _, out var targetMemberInfo);
+                Decorators = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(targetMemberInfo);
                 DecoratorsReversed = ((IEnumerable<Decorator>)Decorators).Reverse().ToList();
                 
                 ActualDrawer = new ListPropertyDrawer(property);

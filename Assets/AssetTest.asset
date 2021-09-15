@@ -21,6 +21,8 @@ MonoBehaviour:
   Comparison: b
   Range: 36.9
   PlayModeOnly: 0
+  field: test
+  Disabled: 1
   ListDrawer:
   - 
   - 
@@ -29,6 +31,25 @@ MonoBehaviour:
   - 
   - 
   - 
+  - 
   EEEEEEEEEE:
-    W: []
+    W:
+    - VSTR: 
+      wow: 0
+      disabled: 0
+      values: 
+    - VSTR: 
+      wow: 0
+      disabled: 0
+      values: 0000000000000000
+    - VSTR: 
+      wow: 0
+      disabled: 0
+      values: 
+    - VSTR: 
+      wow: 0
+      disabled: 0
+      values: 
     str: 
+    str2: 
+    zzzz: 1

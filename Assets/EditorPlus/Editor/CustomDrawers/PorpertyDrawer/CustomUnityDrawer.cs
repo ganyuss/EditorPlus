@@ -22,7 +22,8 @@ namespace EditorPlus.Editor {
             if (_decoratorsToUse != null)
                 return _decoratorsToUse;
             
-            _decoratorsToUse = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(property.GetFieldInfo());
+            EditorUtils.GetMemberInfo(property, out _, out var targetMemberInfo);
+            _decoratorsToUse = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(targetMemberInfo);
 
             return _decoratorsToUse;
         }
@@ -55,7 +56,7 @@ namespace EditorPlus.Editor {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
             List<Decorator> decorators = GetDecoratorsToUse(property);
 
-            if (!decorators.All(decorator => decorator.ShowProperty))
+            if (!decorators.All(decorator => decorator.ShowProperty(property)))
                 return 0;
             
             float height = 0;
@@ -70,15 +71,15 @@ namespace EditorPlus.Editor {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
             List<Decorator> decorators = GetDecoratorsToUse(property);
             List<Decorator> decoratorsReversed = GetDecoratorsToUseReversed(property);
-            
-            if (!decorators.All(decorator => decorator.ShowProperty))
+         
+            if (!decorators.All(decorator => decorator.ShowProperty(property)))
                 return;
             
             foreach (var decorator in decorators) {
                 position = decorator.OnBeforeGUI(position, property, label);
             }
 
-            if (decorators.All(decorator => decorator.ShowProperty)) {
+            if (decorators.All(decorator => decorator.ShowProperty(property))) {
                 position = GetPropertyDrawer(property).OnGUI(position, property, label);
             }
             
@@ -89,10 +90,9 @@ namespace EditorPlus.Editor {
         }
         
         
-        private static bool HasAttribute(SerializedProperty property, Type attributeType, out Attribute attribute)
-        {
-            FieldInfo fi = property.GetFieldInfo();
-            attribute = fi?.GetCustomAttribute(attributeType);
+        private static bool HasAttribute(SerializedProperty property, Type attributeType, out Attribute attribute) {
+            EditorUtils.GetMemberInfo(property, out _, out var targetMemberInfo);
+            attribute = targetMemberInfo?.GetCustomAttribute(attributeType);
             return attribute != null;
         }
     }

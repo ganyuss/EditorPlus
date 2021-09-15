@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EditorPlus.Editor {
     public class HideInPlayModeDecorator : DecoratorBase<HideInPlayModeAttribute> {
-        public override bool ShowProperty => !EditorApplication.isPlaying;
+        public override bool ShowProperty(SerializedProperty property) => !EditorApplication.isPlaying;
     }
     
     public class DisableInPlayModeDecorator : DisableIfDecoratorBase<DisableInPlayModeAttribute> {

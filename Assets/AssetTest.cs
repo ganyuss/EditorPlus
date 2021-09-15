@@ -27,6 +27,10 @@ public class AssetTest : ScriptableObject {
     [SerializeField]
     private int PlayModeOnly;
     
+    [DisableIf(nameof(Disabled))]
+    public string field;
+    public bool Disabled;
+    
     public string[] ListDrawer;
 
     public E EEEEEEEEEE;
@@ -52,13 +56,20 @@ public class AssetTest : ScriptableObject {
     [Serializable]
     public class E {
         public V[] W;
+        [HideIf(nameof(zzzz))]
         public string str;
+        [DisableIf(nameof(zzzz))]
         public string str2;
+        public bool zzzz;
     }
 
     [Serializable]
     public class V {
+        [HideIf(nameof(disabled))]
         public string VSTR;
+        [DisableIf(nameof(disabled))]
         public int wow;
+        public bool disabled;
+        public int[] values;
     }
 }

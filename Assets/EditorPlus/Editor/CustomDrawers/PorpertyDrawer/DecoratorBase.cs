@@ -47,7 +47,7 @@ namespace EditorPlus.Editor {
 
         public virtual OrderValue Order => OrderValue.Regular;
 
-        public virtual bool ShowProperty => true;
+        public virtual bool ShowProperty(SerializedProperty property) => true;
 
         public float GetHeight() => GetHeight(null, null);
         public Rect OnBeforeGUI(Rect rect) => OnBeforeGUI(rect, null, null);
