@@ -1,20 +1,20 @@
 using System;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
+
 namespace EditorPlus.Editor {
-    
-    public abstract class HideIfDecoratorBase<Attr> : DecoratorBase<Attr> where Attr : PropertyAttribute {
+    public abstract class DisableIfReflectionDecoratorBase<Attr> : DisableIfDecoratorBase<Attr> where Attr : PropertyAttribute {
         
-        public override OrderValue Order => OrderValue.Regular;
         private bool AttributeValueCorrect = true;
         
         protected abstract string MemberName { get; }
-        protected abstract bool PropertyShown(SerializedProperty property);
+        protected abstract bool PropertyDisabled(SerializedProperty property);
         
-        public sealed override bool ShowProperty(SerializedProperty property) {
+        protected sealed override bool Disable(SerializedProperty property) {
             try {
-                return PropertyShown(property);
+                return PropertyDisabled(property);
             }
             catch (Exception) {
                 AttributeValueCorrect = false;
@@ -22,36 +22,38 @@ namespace EditorPlus.Editor {
             }
         }
 
-        private string ErrorText => $"HideIf: Member \"{MemberName}\" not found, or value not correct. " +
+        private string ErrorText => $"DisableIf: Member \"{MemberName}\" not found, or value not correct. " +
                                     $"It should be the name of an instance bool field, property or method " +
                                     $"with no parameters.";
         
-        public override float GetHeight(SerializedProperty property, GUIContent label) {
+        public sealed override float GetHeight(SerializedProperty property, GUIContent label) {
             return AttributeValueCorrect ? base.GetHeight(property, label): EditorUtils.HelpBox.GetHeight(ErrorText, HelpBoxType.Error);
         }
 
-        public override Rect OnBeforeGUI(Rect position, SerializedProperty property, GUIContent label) {
+        public sealed override Rect OnBeforeGUI(Rect position, SerializedProperty property, GUIContent label) {
             return AttributeValueCorrect ? base.OnBeforeGUI(position, property, label) : EditorUtils.HelpBox.Draw(position, ErrorText, HelpBoxType.Error);
         }
         
-        public override Rect OnAfterGUI(Rect position, SerializedProperty property, GUIContent label) {
+        public sealed override Rect OnAfterGUI(Rect position, SerializedProperty property, GUIContent label) {
             return AttributeValueCorrect ? base.OnAfterGUI(position, property, label) : position;
         }
     }
 
-    public class HideIfDecorator : HideIfDecoratorBase<HideIfAttribute> {
+    public class DisableIfDecorator : DisableIfReflectionDecoratorBase<DisableIfAttribute> {
         protected override string MemberName => CurrentAttribute.MemberName;
-        protected override bool PropertyShown(SerializedProperty property) {
+        
+        protected override bool PropertyDisabled(SerializedProperty property) {
             EditorUtils.GetMemberInfo(property, CurrentAttribute.MemberName, out var targetObject, out var targetMember);
-            return !EditorUtils.GetGeneralValue<bool>(targetObject, targetMember);
+            return EditorUtils.GetGeneralValue<bool>(targetObject, targetMember);
         }
     }
     
-    public class ShowIfDecorator : HideIfDecoratorBase<ShowIfAttribute> {
+    public class EnableIfDecorator : DisableIfReflectionDecoratorBase<EnableIfAttribute> {
         protected override string MemberName => CurrentAttribute.MemberName;
-        protected override bool PropertyShown(SerializedProperty property) {
+        
+        protected override bool PropertyDisabled(SerializedProperty property) {
             EditorUtils.GetMemberInfo(property, CurrentAttribute.MemberName, out var targetObject, out var targetMember);
-            return EditorUtils.GetGeneralValue<bool>(targetObject, targetMember);
+            return !EditorUtils.GetGeneralValue<bool>(targetObject, targetMember);
         }
     }
 }

@@ -10,4 +10,13 @@ namespace EditorPlus {
             MemberName = memberName;
         }
     }
+    
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
+    public class ShowIfAttribute : PropertyAttribute {
+        public string MemberName;
+
+        public ShowIfAttribute(string memberName) {
+            MemberName = memberName;
+        }
+    }
 }

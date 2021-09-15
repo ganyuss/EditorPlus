@@ -58,14 +58,14 @@ public class AssetTest : ScriptableObject {
         public V[] W;
         [HideIf(nameof(zzzz))]
         public string str;
-        [DisableIf(nameof(zzzz) + "wwwww")]
+        [ShowIf(nameof(zzzz))]
         public string str2;
         public bool zzzz;
     }
 
     [Serializable]
     public class V {
-        [HideIf("nameof(disabled)")]
+        [EnableIf(nameof(disabled))]
         public string VSTR;
         [DisableIf(nameof(disabled))]
         public int wow;
