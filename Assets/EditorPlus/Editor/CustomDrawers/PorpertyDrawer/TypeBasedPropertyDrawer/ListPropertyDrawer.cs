@@ -17,8 +17,14 @@ namespace EditorPlus.Editor {
             InnerList = new ReorderableList(CurrentProperty.serializedObject, CurrentProperty) {
                 drawHeaderCallback = DrawListHeader,
                 drawElementCallback = DrawElement,
-                elementHeightCallback = GetElementHeight
+                elementHeightCallback = GetElementHeight,
+                drawElementBackgroundCallback = DrawElementBackground,
             };
+        }
+
+        private void DrawElementBackground(Rect rect, int index, bool isactive, bool isfocused) {
+            rect.width -= 2;
+            EditorGUI.DrawRect(rect, (index % 2 == 1) ? EditorUtils.BackgroundColor : EditorUtils.AccentBackgroundColor);
         }
 
         public float GetHeight(SerializedProperty property, GUIContent label) {
