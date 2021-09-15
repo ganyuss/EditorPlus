@@ -179,7 +179,7 @@ namespace EditorPlus.Editor {
                 if (type != HelpBoxType.None && height < minHeight)
                     height = minHeight;
                 
-                return height;
+                return height + EditorGUIUtility.standardVerticalSpacing*2;
             }
             
             public static Rect GetRect(Rect position, string boxText, HelpBoxType type) {
@@ -188,9 +188,12 @@ namespace EditorPlus.Editor {
 
             public static Rect Draw(Rect position, string boxText, HelpBoxType type) {
                 Rect helpBoxRect = GetRect(position, boxText, type);
+                position.ToBottomOf(helpBoxRect);
+
+                helpBoxRect.y += EditorGUIUtility.standardVerticalSpacing;
+                helpBoxRect.height -= EditorGUIUtility.standardVerticalSpacing * 2;
                 EditorGUI.HelpBox(helpBoxRect, boxText, GetUnityMessageType(type));
                 
-                position.ToBottomOf(helpBoxRect);
                 
                 return position;
             }
