@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace EditorPlus.Editor {
     
-    public class ButtonDrawer : IFrameworkEditor {
+    public class ButtonDrawer : IClassDecorator {
 
         private struct Button {
             public Action Action;

@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,6 +25,10 @@ namespace EditorPlus.Editor {
             GUI.EndScrollView();
 
             return newScroll;
+        }
+
+        public static FieldInfo GetFieldInfo(this SerializedProperty property) {
+            return property.serializedObject.targetObject.GetType().GetField(property.propertyPath);
         }
 
 

@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 
 namespace EditorPlus.Editor {
-    public class OnEditorGUIDrawer : IFrameworkEditor {
+    public class OnEditorGUIDrawer : IClassDecorator {
 
         private List<Action> EditorCallbacks = new List<Action>();
         public void OnEnable(List<Object> targets) {

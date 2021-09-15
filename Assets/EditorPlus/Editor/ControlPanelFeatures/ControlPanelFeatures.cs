@@ -11,7 +11,7 @@ namespace EditorPlus.Editor {
         private const string GeneratedCodeFolderId = "EditorPlus.GeneratedCode.Editor";
         private const string CustomDrawerAttributeFileName = "CustomDrawerAttributeDeclaration.cs";
 
-        public static void GenerateCustomDrawerAttributes() {
+        public static void GenerateCustomDrawerAttributes(List<string> namespaceBlacklist) {
             string codeGenerationFolderPath = FolderLocator.GetFolder(GeneratedCodeFolderId);
             string drawerAttributeFilePath = Path.Combine(codeGenerationFolderPath, CustomDrawerAttributeFileName);
 

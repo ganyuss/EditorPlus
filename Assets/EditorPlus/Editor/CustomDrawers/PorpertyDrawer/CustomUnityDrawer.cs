@@ -9,7 +9,7 @@ namespace EditorPlus.Editor {
     
     /// <summary>
     /// This class is the interface between the custom EditorPlus drawer system and the Unity system.
-    /// <seealso cref="DrawerBase&lt;Attr&gt;"/>
+    /// <seealso cref="AttributeDrawerBase{Attr}"/>
     /// <seealso cref="DecoratorBase&lt;Attr&gt;"/>
     /// </summary>
     public partial class CustomUnityDrawer : PropertyDrawer {
@@ -22,18 +22,8 @@ namespace EditorPlus.Editor {
             if (_decoratorsToUse != null)
                 return _decoratorsToUse;
             
-            _decoratorsToUse = new List<Decorator>();
-            
-            foreach (var decoratorAttributeType in DecoratorAndDrawerDatabase.GetAllDecoratorAttributeTypes()) {
-                if (HasAttribute(property, decoratorAttributeType, out var currentAttribute)) {
-                    Decorator decorator = DecoratorAndDrawerDatabase.GetDecoratorFor(decoratorAttributeType);
-                    decorator.SetAttribute(currentAttribute);
-                    _decoratorsToUse.Add(decorator);
-                }
-            }
-            
-            _decoratorsToUse.Sort((decorator1, decorator2) => decorator1.Order - decorator2.Order);
-            
+            _decoratorsToUse = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(property.GetFieldInfo());
+
             return _decoratorsToUse;
         }
 
@@ -51,7 +41,7 @@ namespace EditorPlus.Editor {
 
             foreach (var drawerAttributeType in DecoratorAndDrawerDatabase.GetAllDrawerAttributeTypes()) {
                 if (HasAttribute(property, drawerAttributeType, out var currentAttribute)) {
-                    Drawer drawer = DecoratorAndDrawerDatabase.GetDrawerFor(drawerAttributeType);
+                    AttributeDrawer drawer = DecoratorAndDrawerDatabase.GetDrawerFor(drawerAttributeType);
                     drawer.SetAttribute(currentAttribute);
                     return drawer;
                 }
@@ -101,11 +91,7 @@ namespace EditorPlus.Editor {
         
         private static bool HasAttribute(SerializedProperty property, Type attributeType, out Attribute attribute)
         {
-            // Inspired by http://answers.unity.com/answers/1347452/view.html
-            // and https://forum.unity.com/threads/multiple-attributes.387515/#post-2566777
-            Type parentType = property.serializedObject.targetObject.GetType();
-            FieldInfo fi = parentType.GetField(property.propertyPath, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            // fi is sometimes null for reasons I ignore but it still seems to work
+            FieldInfo fi = property.GetFieldInfo();
             attribute = fi?.GetCustomAttribute(attributeType);
             return attribute != null;
         }
@@ -113,7 +99,7 @@ namespace EditorPlus.Editor {
     
     public class DefaultPropertyAttribute : PropertyAttribute { }
 
-    public class DefaultDrawer : DrawerBase<DefaultPropertyAttribute> {
+    public class DefaultDrawer : AttributeDrawerBase<DefaultPropertyAttribute> {
         
         public override float GetHeight(SerializedProperty property, GUIContent label) {
             return EditorGUI.GetPropertyHeight(property, label);

@@ -6,12 +6,12 @@ namespace EditorPlus.Editor {
     /// <summary>
     /// This class can be used as a shortcut for Drawers that can only be applied to specific properties.
     /// implement <see cref="GetRealHeight">GetRealHeight</see> and <see cref="OnRealGUI">OnRealGUI</see>
-    /// instead of <see cref="DrawerBase&lt;Attr&gt;.GetHeight">GetHeight</see> and
-    /// <see cref="DrawerBase&lt;Attr&gt;.OnGUI">OnGUI</see>, and if <see cref="IsPropertyValid">IsPropertyValid</see>
+    /// instead of <see cref="AttributeDrawerBase{Attr}.GetHeight">GetHeight</see> and
+    /// <see cref="AttributeDrawerBase{Attr}.OnGUI">OnGUI</see>, and if <see cref="IsPropertyValid">IsPropertyValid</see>
     /// returns false, an error box will be shown instead of the property.
     /// </summary>
     /// <typeparam name="Attr"></typeparam>
-    public abstract class PropertySpecificDrawerBase<Attr> : DrawerBase<Attr> where Attr : PropertyAttribute {
+    public abstract class PropertySpecificDrawerBase<Attr> : AttributeDrawerBase<Attr> where Attr : PropertyAttribute {
         
         public override float GetHeight(SerializedProperty property, GUIContent label) {
             if (IsPropertyValid(property, label)) {

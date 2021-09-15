@@ -10,13 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: be92026289df9674e8760ea50b3ce186, type: 3}
-  m_Name: AssetTest 1
+  m_Name: 
   m_EditorClassIdentifier: 
   Test: 0
   MinMax:
-    Min: 15
-    Max: 15
-  TextArea: a
+    Min: 0
+    Max: 0
+  TextArea: 
   Multiline: 
-  Comparison: a
-  Range: 36.9
+  Comparison: 
+  Range: 0
+  PlayModeOnly: 0
+  ListDrawer:
+  - 
+  - 
+  EEEEEEEEEE:
+    W: []
+    str: 

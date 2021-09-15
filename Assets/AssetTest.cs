@@ -11,21 +11,25 @@ public class AssetTest : ScriptableObject {
     public int Test;
 
     [HelpBox("This field is convenient", HelpBoxType.Info)]
-    [CustomSpace(20, 10)]
     [MinMaxSlider(0, 20)]
     public MinMaxInt MinMax;
 
-    [CustomSpace(10, 10)]
     [TextArea(2, 3)]
     public string TextArea;
-    [CustomSpace(10 ,10)]
     [Multiline(5)]
     public string Multiline;
     [Multiline(5)]
     public string Comparison;
-    [CustomSpace(10 ,10)]
     [Range(0, 100)]
     public float Range;
+
+    [HideInPlayMode]
+    [SerializeField]
+    private int PlayModeOnly;
+    
+    public string[] ListDrawer;
+
+    public E EEEEEEEEEE;
     
     [CustomSpace(10 ,10)]
     [Button("test")]
@@ -44,4 +48,17 @@ public class AssetTest : ScriptableObject {
         EditorGUILayout.LabelField("OnEditorGUI did this");
     }
 #endif
+
+    [Serializable]
+    public class E {
+        public V[] W;
+        public string str;
+        public string str2;
+    }
+
+    [Serializable]
+    public class V {
+        public string VSTR;
+        public int wow;
+    }
 }

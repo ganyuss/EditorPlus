@@ -14,9 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Test: 0
   MinMax:
-    Min: 15
+    Min: 9
     Max: 15
   TextArea: b
   Multiline: b
   Comparison: b
   Range: 36.9
+  PlayModeOnly: 0
+  ListDrawer:
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  EEEEEEEEEE:
+    W: []
+    str: 

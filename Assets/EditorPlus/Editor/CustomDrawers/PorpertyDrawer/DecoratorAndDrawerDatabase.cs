@@ -11,14 +11,14 @@ namespace EditorPlus.Editor {
     public static class DecoratorAndDrawerDatabase {
 
         private static Dictionary<Type, Func<Decorator>> DecoratorFactoryDictionary;
-        private static Dictionary<Type, Func<Drawer>> DrawerFactoryDictionary;
+        private static Dictionary<Type, Func<AttributeDrawer>> AttrbuteDrawerFactoryDictionary;
 
         public static Type[] GetAllDecoratorAttributeTypes() {
             return DecoratorFactoryDictionary.Keys.ToArray();
         }
         
         public static Type[] GetAllDrawerAttributeTypes() {
-            return DrawerFactoryDictionary.Keys.ToArray();
+            return AttrbuteDrawerFactoryDictionary.Keys.ToArray();
         }
 
         public static bool IsDecoratorAttribute(Type attributeType) {
@@ -26,15 +26,15 @@ namespace EditorPlus.Editor {
         }
         
         public static bool IsDrawerAttribute(Type attributeType) {
-            return DrawerFactoryDictionary.ContainsKey(attributeType);
+            return AttrbuteDrawerFactoryDictionary.ContainsKey(attributeType);
         }
 
         public static Decorator GetDecoratorFor(Type attributeType) {
             return DecoratorFactoryDictionary[attributeType].Invoke();
         }
 
-        public static Drawer GetDrawerFor(Type attributeType) {
-            return DrawerFactoryDictionary[attributeType].Invoke();
+        public static AttributeDrawer GetDrawerFor(Type attributeType) {
+            return AttrbuteDrawerFactoryDictionary[attributeType].Invoke();
         }
         
         public static bool TryGetDecoratorFor(Type attributeType, out Decorator decorator) {
@@ -44,13 +44,15 @@ namespace EditorPlus.Editor {
         }
         
         public static bool TryGetDrawerFor(Type attributeType, out Drawer drawer) {
-            bool ok = DrawerFactoryDictionary.TryGetValue(attributeType, out var factory);
+            bool ok = AttrbuteDrawerFactoryDictionary.TryGetValue(attributeType, out var factory);
             drawer = factory?.Invoke();
             return ok;
         }
 
         public static List<Decorator> GetAllDecoratorsFor(MemberInfo member) {
             List<Decorator> result = new List<Decorator>();
+            if (member is null)
+                return result;
             
             foreach (var attribute in member.GetCustomAttributes()) {
                 if (TryGetDecoratorFor(attribute.GetType(), out var decorator)) {
@@ -66,7 +68,7 @@ namespace EditorPlus.Editor {
         
         static DecoratorAndDrawerDatabase() {
             DecoratorFactoryDictionary = new Dictionary<Type, Func<Decorator>>();
-            DrawerFactoryDictionary = new Dictionary<Type, Func<Drawer>>();
+            AttrbuteDrawerFactoryDictionary = new Dictionary<Type, Func<AttributeDrawer>>();
             
             Type[] DecoratorTypes = TypeUtils.GetAllTypesInheritingFrom(typeof(DecoratorBase<>));
             foreach (var decoratorType in DecoratorTypes) {
@@ -76,11 +78,11 @@ namespace EditorPlus.Editor {
                 }
             }
             
-            Type[] DrawerTypes = TypeUtils.GetAllTypesInheritingFrom(typeof(DrawerBase<>));
+            Type[] DrawerTypes = TypeUtils.GetAllTypesInheritingFrom(typeof(AttributeDrawerBase<>));
             foreach (var drawerType in DrawerTypes) {
                 if (IsInstantiationValid(drawerType)) {
-                    Drawer drawer = TypeUtils.CreateInstance<Drawer>(drawerType);
-                    DrawerFactoryDictionary[drawer.AttributeType] = () => TypeUtils.CreateInstance<Drawer>(drawerType);
+                    AttributeDrawer drawer = TypeUtils.CreateInstance<AttributeDrawer>(drawerType);
+                    AttrbuteDrawerFactoryDictionary[drawer.AttributeType] = () => TypeUtils.CreateInstance<AttributeDrawer>(drawerType);
                 }
             }
         }
