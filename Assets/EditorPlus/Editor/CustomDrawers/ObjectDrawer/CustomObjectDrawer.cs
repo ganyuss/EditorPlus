@@ -40,7 +40,7 @@ namespace EditorPlus.Editor {
             List<Object> targetList = targets.ToList();
             
             foreach (var editor in Editors) {
-                //editor.OnInspectorGUIBefore(targetList);
+                editor.OnInspectorGUIBefore(targetList);
             }
 
             SerializedProperty firstProperty = serializedObject.GetIterator();
@@ -52,7 +52,7 @@ namespace EditorPlus.Editor {
             }
 
             foreach (var editor in Editors) {
-                //editor.OnInspectorGUIAfter(targetList);
+                editor.OnInspectorGUIAfter(targetList);
             }
 
             serializedObject.ApplyModifiedProperties();
