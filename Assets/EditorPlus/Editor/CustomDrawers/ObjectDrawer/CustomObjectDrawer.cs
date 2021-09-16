@@ -84,30 +84,32 @@ namespace EditorPlus.Editor {
         }
 
         public float GetPropertyHeight(SerializedProperty property, bool showLabel = true) {
+            float fieldHeight;
             if (IsPropertyToDrawAsDefault(property))
-                return EditorGUI.GetPropertyHeight(property, showLabel ? new GUIContent(property.displayName) : GUIContent.none)
-                    + FieldMargin * 2;
+                fieldHeight = EditorGUI.GetPropertyHeight(property, showLabel ? new GUIContent(property.displayName) : GUIContent.none);
             else if (property.isArray) {
-                return GetListDrawer(property).GetHeight(property)
-                    + FieldMargin * 2;
+                fieldHeight = GetListDrawer(property).GetHeight(property);
             }
             else {
-                float size = showLabel ? EditorGUIUtility.singleLineHeight : 0;
+                fieldHeight = showLabel ? EditorGUIUtility.singleLineHeight : 0;
 
                 property.NextVisible(true);
                 int currentDepth = property.depth;
                 do {
-                    size += GetPropertyHeight(property.Copy());
+                    fieldHeight += GetPropertyHeight(property.Copy());
                 } while (property.NextVisible(false) && currentDepth <= property.depth);
-
-                return size + FieldMargin * 2;
             }
+
+            return fieldHeight > 0 ? fieldHeight + 2 * FieldMargin : 0;
         }
 
         public void Draw(SerializedProperty property, Rect rect, bool showLabel = true) {
-            rect.height -= FieldMargin * 2;
-            rect.y += FieldMargin;
-            
+            if (rect.height != 0) {
+                rect.height -= FieldMargin * 2;
+                rect.y += FieldMargin;
+            }
+
+
             if (IsPropertyToDrawAsDefault(property)) {
                 EditorGUI.PropertyField(rect, property, showLabel ? new GUIContent(property.displayName) : GUIContent.none);
             }
