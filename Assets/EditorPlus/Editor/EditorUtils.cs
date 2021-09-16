@@ -125,16 +125,19 @@ namespace EditorPlus.Editor {
                     targetMember = (nextObject ?? targetObject).GetType().GetMember(memberPath[0], BindingFlags).First();
                     memberPath.RemoveAt(0);
 
-                    if (targetMember.MemberType == MemberTypes.Field) {
-                        if (nextObject != null) {
-                            targetObject = nextObject;
-                        }
-
-                        nextObject = ((FieldInfo) targetMember).GetValue(targetObject);
+                    if (nextObject != null) {
+                        targetObject = nextObject;
                     }
-                    else {
-                        throw new ArgumentException($"member {targetMember.Name} of class {targetObject.GetType().FullName} is " +
-                                                    $"not a field");
+                    
+                    if (memberPath.Count > 0) {
+                        if (targetMember.MemberType == MemberTypes.Field) {
+                            nextObject = ((FieldInfo) targetMember).GetValue(targetObject);
+                        }
+                        else {
+                            throw new ArgumentException(
+                                $"member {targetMember.Name} of class {targetObject.GetType().FullName} is " +
+                                $"not a field, property or method");
+                        }
                     }
                 }
             }
@@ -150,6 +153,26 @@ namespace EditorPlus.Editor {
         private static int GetArrayIndex(List<string> memberPath) {
             // We get the first capture
             return int.Parse(ArrayDataRegex.Match(memberPath[1]).Groups[1].Captures[0].Value);
+        }
+
+        /// <summary>
+        /// This method allows to compare a type to its serialized name.
+        /// </summary>
+        /// <param name="type">The type to test</param>
+        /// <param name="serializedTypeName">The name as it appears in the serialized property</param>
+        /// <returns>true if the type name describes the given type, false otherwise</returns>
+        public static bool CompareType(Type type, string serializedTypeName) {
+            Dictionary<string, Type> specialTypes = new Dictionary<string, Type> {
+                {"int", typeof(Int32)},
+                {"float", typeof(Single)},
+                {"string", typeof(String)},
+            };
+
+            if (specialTypes.TryGetValue(serializedTypeName, out var specialType)) {
+                return specialType == type;
+            }
+
+            return type.Name == serializedTypeName;
         }
 
 

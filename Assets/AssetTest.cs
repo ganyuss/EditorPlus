@@ -31,6 +31,7 @@ public class AssetTest : ScriptableObject {
     public string field;
     public bool Disabled;
     
+    [BetterList(AlwaysExpanded = false)]
     public string[] ListDrawer;
 
     public E EEEEEEEEEE;
@@ -55,12 +56,21 @@ public class AssetTest : ScriptableObject {
 
     [Serializable]
     public class E {
+        [BetterList(AddMethod = nameof(Add), RemoveMethod = nameof(Remove))]
         public V[] W;
         [HideIf(nameof(zzzz))]
         public string str;
         [ShowIf(nameof(zzzz))]
         public string str2;
         public bool zzzz;
+
+        private void Add() {
+            Debug.Log("ass");
+        }
+
+        private void Remove(V v) {
+            Debug.Log("remove element " + v.VSTR);
+        }
     }
 
     [Serializable]

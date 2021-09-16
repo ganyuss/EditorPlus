@@ -13,13 +13,13 @@ namespace EditorPlus.Editor {
         protected override Rect OnRealGUI(Rect position, SerializedProperty property, GUIContent label) {
             Rect rangeRect = new Rect(position) { height = GetHeight(property, label) };
 
-            if (property.type == "int") {
+            if (EditorUtils.CompareType(typeof(int), property.type)) {
                 EditorGUI.IntSlider(
                     rangeRect, property, 
                     Mathf.RoundToInt(CurrentAttribute.min), Mathf.RoundToInt(CurrentAttribute.max),
                     label);
             }
-            else if (property.type == "float") {
+            else if (EditorUtils.CompareType(typeof(float), property.type)) {
                 EditorGUI.Slider(
                     rangeRect, property, 
                     CurrentAttribute.min, CurrentAttribute.max,
