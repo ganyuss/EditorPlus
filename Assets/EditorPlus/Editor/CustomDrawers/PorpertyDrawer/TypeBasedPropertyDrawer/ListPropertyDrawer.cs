@@ -105,12 +105,20 @@ namespace EditorPlus.Editor {
             }
         }
 
-        private void DrawElementBackground(Rect rect, int index, bool isactive, bool isfocused) {
+        private void DrawElementBackground(Rect rect, int index, bool isActive, bool isFocused) {
             rect.width -= 2;
             EditorGUI.DrawRect(rect, (index % 2 == 1) ? EditorUtils.BackgroundColor : EditorUtils.AccentBackgroundColor);
-            if (isfocused && ShowFocus) {
+            if (ShowFocus && (isActive || isFocused)) {
                 rect.width = 1.5f;
-                EditorGUI.DrawRect(rect, Color.blue);
+                Color color = new Color(0.31f, 0.42f, 1f);
+                if (isActive) {
+                    color.a = 0.45f;
+                }
+                if (isFocused) {
+                    color.a = 0.9f;
+                }
+
+                EditorGUI.DrawRect(rect, color);
             }
         }
 
