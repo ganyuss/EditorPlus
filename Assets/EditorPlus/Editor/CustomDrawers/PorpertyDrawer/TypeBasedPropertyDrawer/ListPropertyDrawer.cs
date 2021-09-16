@@ -14,7 +14,7 @@ namespace EditorPlus.Editor {
         
         private ReorderableList InnerList;
         private SerializedProperty CurrentProperty;
-        private SerializedFieldDrawer FieldDrawer = new SerializedFieldDrawer();
+        private SerializedPropertyDrawerList DrawerList;
 
         private bool ShowFocus = true;
         private bool AlwaysExpanded = false;
@@ -28,8 +28,10 @@ namespace EditorPlus.Editor {
                                             "is incorrect. The name must point to a method with only one argument, either " +
                                             "the index of the element to remove or the element itself.";
 
-        public ListPropertyDrawer(SerializedProperty property) {
+        public ListPropertyDrawer(SerializedProperty property, SerializedPropertyDrawerList drawerList) {
             CurrentProperty = property.Copy();
+            DrawerList = drawerList;
+            
             InnerList = new ReorderableList(CurrentProperty.serializedObject, CurrentProperty) {
                 drawHeaderCallback = DrawListHeader,
                 drawElementCallback = DrawElement,
@@ -179,11 +181,11 @@ namespace EditorPlus.Editor {
         
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused) {
             SerializedProperty property = GetPropertyAt(index);
-            FieldDrawer.Draw(property.Copy(), rect, false);
+            DrawerList.GetDrawer(property).Draw(rect, false);
         }
         
         private float GetElementHeight(int index) {
-            return FieldDrawer.GetPropertyHeight(GetPropertyAt(index).Copy(), false);
+            return DrawerList.GetDrawer(GetPropertyAt(index)).GetPropertyHeight(false);
         }
 
         private SerializedProperty GetPropertyAt(int index) {

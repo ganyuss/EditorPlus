@@ -12,13 +12,13 @@ namespace EditorPlus.Editor {
             return CurrentAttribute.SpaceBefore + CurrentAttribute.SpaceAfter;
         }
 
-        public override Rect OnBeforeGUI(Rect position, SerializedProperty property, GUIContent label) {
+        protected override Rect OnBeforeGUI(Rect position, string memberPath, SerializedProperty property) {
             position.y += CurrentAttribute.SpaceBefore;
             position.height -= CurrentAttribute.SpaceBefore;
             return position;
         }
         
-        public override Rect OnAfterGUI(Rect position, SerializedProperty property, GUIContent label) {
+        protected override Rect OnAfterGUI(Rect position, string memberPath, SerializedProperty property) {
             position.y += CurrentAttribute.SpaceAfter;
             position.height -= CurrentAttribute.SpaceAfter;
             return position;

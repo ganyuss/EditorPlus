@@ -11,7 +11,7 @@ namespace EditorPlus.Editor {
         
         private bool guiEnabled;
 
-        public override Rect OnBeforeGUI(Rect position, SerializedProperty property, GUIContent label) {
+        protected override Rect OnBeforeGUI(Rect position, string memberPath, SerializedProperty property) {
             
             if (Disable(property)) {
                 guiEnabled = GUI.enabled;
@@ -21,7 +21,7 @@ namespace EditorPlus.Editor {
             return position;
         }
 
-        public override Rect OnAfterGUI(Rect position, SerializedProperty property, GUIContent label) {
+        protected override Rect OnAfterGUI(Rect position, string memberPath, SerializedProperty property) {
             if (Disable(property))
                 GUI.enabled = guiEnabled;
             

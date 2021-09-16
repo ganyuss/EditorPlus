@@ -9,17 +9,23 @@ using Object = UnityEngine.Object;
 namespace EditorPlus.Editor {
     
     public class ButtonDrawer : IClassDecorator {
-
+        
+        public string TargetPropertyPath { get; set; }
+        
+        private readonly float ButtonMargin = EditorGUIUtility.standardVerticalSpacing;
+        
         private struct Button {
             public Action Action;
             public ButtonAttribute Attribute;
             public List<Decorator> Decorators;
             public string Name;
+            public string MethodName;
 
             public bool Equals(Button other) {
-                return Name == other.Name
-                    && Attribute.Size == other.Attribute.Size
-                    && Decorators.Select(d => d.GetType()).SequenceEqual(other.Decorators.Select(d => d.GetType()));
+                return MethodName == other.MethodName
+                       && Name == other.Name
+                       && Attribute.Size == other.Attribute.Size
+                       && Decorators.Select(d => d.GetType()).SequenceEqual(other.Decorators.Select(d => d.GetType()));
             }
 
             public void Merge(Button other) {
@@ -29,7 +35,7 @@ namespace EditorPlus.Editor {
 
         private readonly List<Button> ButtonsToDraw = new List<Button>();
 
-        public void OnEnable(List<Object> targets) {
+        public void OnEnable(List<object> targets) {
 
             foreach (var target in targets) {
                 List<MethodInfo> methods = GetAllButtonMethods(target);
@@ -51,51 +57,81 @@ namespace EditorPlus.Editor {
                         Name = buttonAttribute.Name ?? method.Name,
                         Attribute = buttonAttribute,
                         Decorators = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(method),
-                        Action = (Action) method.CreateDelegate(typeof(Action), target)
+                        Action = (Action) method.CreateDelegate(typeof(Action), target),
+                        MethodName = method.Name
                     });
                 }
+            }
 
-                for (int i = 0; i < ButtonsToDraw.Count; i++) {
-                    Button currentButton = ButtonsToDraw[i];
+            for (int i = 0; i < ButtonsToDraw.Count; i++) {
+                Button currentButton = ButtonsToDraw[i];
 
-                    for (int j = ButtonsToDraw.Count - 1; j > i; j--) {
-                        if (currentButton.Equals(ButtonsToDraw[j])) {
-                            currentButton.Merge(ButtonsToDraw[j]);
-                        }
-                        
+                for (int j = ButtonsToDraw.Count - 1; j > i; j--) {
+                    if (currentButton.Equals(ButtonsToDraw[j])) {
+                        currentButton.Merge(ButtonsToDraw[j]);
                         ButtonsToDraw.RemoveAt(j);
                     }
                 }
             }
         }
 
+        public float GetHeight(List<object> targets) {
+            float height = 0;
+            foreach (Button button in ButtonsToDraw) {
+                height += GetHeight(button) + ButtonMargin * 2;
+            }
+            
+            return height;
+        }
+
         private bool IsSuitableForButton(MethodInfo method) {
             return !method.IsAbstract && !method.IsConstructor && method.GetParameters().Length == 0;
         }
 
-        private List<MethodInfo> GetAllButtonMethods(Object target) {
+        private List<MethodInfo> GetAllButtonMethods(object target) {
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
                                        BindingFlags.NonPublic;
             return target.GetType().GetMethods(flags)
                 .Where(method => method.GetCustomAttribute<ButtonAttribute>() != null)
                 .ToList();
-        } 
-
-        public void OnInspectorGUIBefore(List<Object> targets) { }
-
-        public void OnInspectorGUIAfter(List<Object> targets) {
-
-            foreach (var button in ButtonsToDraw) {
-                Draw(button, targets);
-            }
         }
 
-        private void Draw(Button button, IEnumerable<Object> targets) {
-            Rect currentRect = EditorGUILayout.GetControlRect(GUILayout.Height(GetHeight(button)));
+        public Rect OnInspectorGUIBefore(Rect rect, List<object> targets) {
+            return rect;
+        }
+
+        public Rect OnInspectorGUIAfter(Rect rect, List<object> targets) {
+
+            // See EditorGUI.indent
+            float indent = EditorGUI.indentLevel * 15f;
+            
+            // EditorGUI button do not take indent in account, we have to 
+            // set it manually
+            rect.x += indent;
+            rect.width -= indent;
+
+            foreach (var button in ButtonsToDraw) {
+                rect = Draw(rect, button, targets);
+            }
+            
+            
+            rect.x -= indent;
+            rect.width += indent;
+
+            return rect;
+        }
+
+        private Rect Draw(Rect rect, Button button, IEnumerable<object> targets) {
+
+            Rect currentRect = new Rect(rect) { height = GetHeight(button) };
+            rect.ToBottomOf(currentRect);
+            currentRect.y += ButtonMargin;
+            currentRect.height -= ButtonMargin;
             
             foreach (var decorator in button.Decorators) {
-                currentRect = decorator.OnBeforeGUI(currentRect);
+                currentRect = decorator.OnBeforeGUI(currentRect, GetPropertyPath(button));
             }
+            
 
             Rect buttonRect = new Rect(currentRect) {height = GetButtonHeight(button.Attribute.Size)};
             if (GUI.Button(buttonRect, button.Name)) {
@@ -106,14 +142,26 @@ namespace EditorPlus.Editor {
             List<Decorator> reversedDecorators = button.Decorators.ToList();
             reversedDecorators.Reverse();
             foreach (var decorator in reversedDecorators) {
-                currentRect = decorator.OnBeforeGUI(currentRect);
+                currentRect = decorator.OnAfterGUI(currentRect, GetPropertyPath(button));
             }
+
+            return rect;
         }
 
+        private string GetPropertyPath(Button button) {
+            if (!string.IsNullOrEmpty(TargetPropertyPath)) {
+                return TargetPropertyPath + "." + button.MethodName;
+            }
+            else {
+                return button.MethodName;
+            }
+        }
+        
         private float GetHeight(Button button) {
             float height = button.Decorators.Select(d => d.GetHeight()).Sum();
             height += GetButtonHeight(button.Attribute.Size);
-
+            height += ButtonMargin * 2;
+            
             return height;
         }
 

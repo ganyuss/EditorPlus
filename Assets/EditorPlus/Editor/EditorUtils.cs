@@ -52,17 +52,20 @@ namespace EditorPlus.Editor {
         }
 
 
-        public static void GetMemberInfo(SerializedProperty property, out object targetObject, out MemberInfo targetMember) {
+        public static void GetMemberInfo(SerializedProperty property, out object targetObject,
+            out MemberInfo targetMember) 
+            => GetMemberInfo(property.serializedObject.targetObject, property, out targetObject, out targetMember);
+
+        public static void GetMemberInfo(object parentObject, SerializedProperty property, out object targetObject, out MemberInfo targetMember) {
             if (string.IsNullOrEmpty(property.propertyPath)) {
                 targetObject = null;
                 targetMember = null;
                 return;
             }
 
-            object startingObject = property.serializedObject.targetObject;
             List<string> memberPath = property.propertyPath.Split('.').ToList();
 
-            GetMemberInfo(startingObject, memberPath, out targetObject, out targetMember);
+            GetMemberInfo(parentObject, memberPath, out targetObject, out targetMember);
         }
         
         public static void GetMemberInfo(
@@ -75,21 +78,16 @@ namespace EditorPlus.Editor {
 
             GetMemberInfo(startingObject, memberPath, out targetObject, out targetMember);
         }
-
-        public static T GetGeneralValue<T>(object obj, MemberInfo member) {
-            if (member.MemberType == MemberTypes.Field) {
-                return (T) ((FieldInfo) member).GetValue(obj);
-            }
-            if (member.MemberType == MemberTypes.Property) {
-                return (T) ((PropertyInfo) member).GetValue(obj);
-            }
-            if (member.MemberType == MemberTypes.Method) {
-                return (T) ((MethodInfo) member).Invoke(obj, new object[0]);
-            }
-
-            throw new ArgumentException("trying to get generic value of member that is not a property, field or method.");
-        }
         
+        public static void GetMemberInfo(
+            object startingObject, string memberPath, 
+            out object targetObject, out MemberInfo targetMember) {
+            
+            List<string> memberPathList = memberPath.Split('.').ToList();
+
+            GetMemberInfo(startingObject, memberPathList, out targetObject, out targetMember);
+        }
+
         private static void GetMemberInfo(object startingObject, List<string> memberPath,
                 out object targetObject, out MemberInfo targetMember) {
 
@@ -142,6 +140,21 @@ namespace EditorPlus.Editor {
                 }
             }
         }
+        
+        public static T GetGeneralValue<T>(object obj, MemberInfo member) {
+            if (member.MemberType == MemberTypes.Field) {
+                return (T) ((FieldInfo) member).GetValue(obj);
+            }
+            if (member.MemberType == MemberTypes.Property) {
+                return (T) ((PropertyInfo) member).GetValue(obj);
+            }
+            if (member.MemberType == MemberTypes.Method) {
+                return (T) ((MethodInfo) member).Invoke(obj, new object[0]);
+            }
+
+            throw new ArgumentException("trying to get generic value of member that is not a property, field or method.");
+        }
+
 
         // In a property path, the path to the Nth element of an array is Array.data[N]
         private static readonly Regex ArrayDataRegex = new Regex(@"data\[([0-9]+)\]");

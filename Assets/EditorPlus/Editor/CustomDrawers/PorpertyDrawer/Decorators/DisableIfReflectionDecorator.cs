@@ -30,12 +30,12 @@ namespace EditorPlus.Editor {
             return AttributeValueCorrect ? base.GetHeight(property, label): EditorUtils.HelpBox.GetHeight(ErrorText, HelpBoxType.Error);
         }
 
-        public sealed override Rect OnBeforeGUI(Rect position, SerializedProperty property, GUIContent label) {
-            return AttributeValueCorrect ? base.OnBeforeGUI(position, property, label) : EditorUtils.HelpBox.Draw(position, ErrorText, HelpBoxType.Error);
+        protected sealed override Rect OnBeforeGUI(Rect position, string memberPath, SerializedProperty property) {
+            return AttributeValueCorrect ? base.OnBeforeGUI(position, memberPath, property) : EditorUtils.HelpBox.Draw(position, ErrorText, HelpBoxType.Error);
         }
         
-        public sealed override Rect OnAfterGUI(Rect position, SerializedProperty property, GUIContent label) {
-            return AttributeValueCorrect ? base.OnAfterGUI(position, property, label) : position;
+        protected sealed override Rect OnAfterGUI(Rect position, string memberPath, SerializedProperty property) {
+            return AttributeValueCorrect ? base.OnAfterGUI(position, memberPath, property) : position;
         }
     }
 

@@ -76,7 +76,7 @@ namespace EditorPlus.Editor {
                 return;
             
             foreach (var decorator in decorators) {
-                position = decorator.OnBeforeGUI(position, property, label);
+                position = decorator.OnBeforeGUI(position, property);
             }
 
             if (decorators.All(decorator => decorator.ShowProperty(property))) {
@@ -85,7 +85,7 @@ namespace EditorPlus.Editor {
             
             // We want the first decorator to be the last one called here
             foreach (var decorator in decoratorsReversed) {
-                position = decorator.OnAfterGUI(position, property, label);
+                position = decorator.OnAfterGUI(position, property);
             }
         }
         

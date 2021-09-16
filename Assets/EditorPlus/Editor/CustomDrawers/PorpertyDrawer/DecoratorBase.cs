@@ -50,18 +50,23 @@ namespace EditorPlus.Editor {
         public virtual bool ShowProperty(SerializedProperty property) => true;
 
         public float GetHeight() => GetHeight(null, null);
-        public Rect OnBeforeGUI(Rect rect) => OnBeforeGUI(rect, null, null);
-        public Rect OnAfterGUI(Rect rect) => OnAfterGUI(rect, null, null);
+        public Rect OnBeforeGUI(Rect rect, string memberPath) => OnBeforeGUI(rect, memberPath, null);
+        public Rect OnAfterGUI(Rect rect, string memberPath) => OnAfterGUI(rect, memberPath, null);
         
         public virtual float GetHeight([CanBeNull] SerializedProperty property, [CanBeNull] GUIContent label) {
             return 0;
         }
+
+        public Rect OnBeforeGUI(Rect position, SerializedProperty property) =>
+            OnBeforeGUI(position, property.propertyPath, property);
+        public Rect OnAfterGUI(Rect position, SerializedProperty property) =>
+            OnAfterGUI(position, property.propertyPath, property);
         
-        public virtual Rect OnBeforeGUI(Rect position, [CanBeNull] SerializedProperty property, [CanBeNull] GUIContent label) {
+        protected virtual Rect OnBeforeGUI(Rect position, string memberPath, [CanBeNull] SerializedProperty property) {
             return position;
         }
         
-        public virtual Rect OnAfterGUI(Rect position, [CanBeNull] SerializedProperty property, [CanBeNull] GUIContent label) {
+        protected virtual Rect OnAfterGUI(Rect position, string memberPath, [CanBeNull] SerializedProperty property) {
             return position;
         }
 

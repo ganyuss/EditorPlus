@@ -35,8 +35,10 @@ public class AssetTest : ScriptableObject {
     public string[] ListDrawer;
 
     public E EEEEEEEEEE;
+
+    public string ZZZZzz;
     
-    [CustomSpace(10 ,10)]
+    //[CustomSpace(10 ,10)]
     [Button("test")]
     public void a() {
         Debug.Log("AAAAAAAAAAAAAAA");
@@ -56,7 +58,6 @@ public class AssetTest : ScriptableObject {
 
     [Serializable]
     public class E {
-        [BetterList(AddMethod = nameof(Add), RemoveMethod = nameof(Remove))]
         public V[] W;
         [HideIf(nameof(zzzz))]
         public string str;
@@ -64,12 +65,9 @@ public class AssetTest : ScriptableObject {
         public string str2;
         public bool zzzz;
 
-        private void Add() {
-            Debug.Log("ass");
-        }
-
-        private void Remove(V v) {
-            Debug.Log("remove element " + v.VSTR);
+        [Button("WWWWWWWWWWWWWWWWWWWW")]
+        private void test() {
+            Debug.Log("AAAAAAAAAAAAAAA z");
         }
     }
 

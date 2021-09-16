@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 
 namespace EditorPlus.Editor {
     public class OnEditorGUIDrawer : IClassDecorator {
+        
+        public string TargetPropertyPath { get; set; }
 
         private List<Action> EditorCallbacks = new List<Action>();
-        public void OnEnable(List<Object> targets) {
+        public void OnEnable(List<object> targets) {
             foreach (var target in targets) {
                 EditorCallbacks.AddRange(GetEditorCallbacks(target));
             }
         }
 
-        private List<Action> GetEditorCallbacks(Object obj) {
+        public float GetHeight(List<object> targets) => 0;
+
+        private List<Action> GetEditorCallbacks(object obj) {
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
                                        BindingFlags.NonPublic;
 
@@ -38,13 +41,16 @@ namespace EditorPlus.Editor {
             return !method.IsConstructor && method.GetParameters().Length == 0;
         }
 
-        public void OnInspectorGUIBefore(List<Object> targets) 
-        { }
+        public Rect OnInspectorGUIBefore(Rect rect, List<object> targets) {
+            return rect;
+        }
 
-        public void OnInspectorGUIAfter(List<Object> targets) {
+        public Rect OnInspectorGUIAfter(Rect rect, List<object> targets) {
             foreach (var editorCallback in EditorCallbacks) {
                 editorCallback.Invoke();
             }
+
+            return rect;
         }
     }
 }

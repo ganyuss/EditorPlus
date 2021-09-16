@@ -16,7 +16,7 @@ namespace EditorPlus {
         }
     }
     
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = true)]
     public class EnableIfAttribute : PropertyAttribute {
         public string MemberName;
         public object OptionalTargetValue;

@@ -7,7 +7,7 @@ namespace EditorPlus.Editor {
             return EditorUtils.HelpBox.GetHeight(CurrentAttribute.Text, CurrentAttribute.Type);
         }
 
-        public override Rect OnBeforeGUI(Rect position, SerializedProperty property, GUIContent label) {
+        protected override Rect OnBeforeGUI(Rect position, string memberPath, SerializedProperty property) {
             if (CurrentAttribute.Position == HelpBoxPosition.Before) {
                 return DrawHelpBox(position);
             }
@@ -15,7 +15,7 @@ namespace EditorPlus.Editor {
             return position;
         }
 
-        public override Rect OnAfterGUI(Rect position, SerializedProperty property, GUIContent label) {
+        protected override Rect OnAfterGUI(Rect position, string memberPath, SerializedProperty property) {
             if (CurrentAttribute.Position == HelpBoxPosition.After) {
                 return DrawHelpBox(position);
             }
