@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Test: 0
   MinMax:
-    Min: 0
-    Max: 0
+    Min: 1
+    Max: 12
   TextArea: 
   Multiline: 
   Comparison: 
@@ -24,8 +24,8 @@ MonoBehaviour:
   field: 
   Disabled: 0
   ListDrawer:
-  - 
-  - 
+  - 2
+  - 1
   EEEEEEEEEE:
     W:
     - VSTR: 

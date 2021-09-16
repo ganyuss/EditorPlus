@@ -14,42 +14,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Test: 0
   MinMax:
-    Min: 9
-    Max: 15
+    Min: 7
+    Max: 14
   TextArea: b
   Multiline: b
   Comparison: b
   Range: 36.9
   PlayModeOnly: 0
   field: test
-  Disabled: 1
+  Disabled: 0
   ListDrawer:
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - 7
+  - 4
+  - 2
+  - 4
+  - 4
   EEEEEEEEEE:
     W:
     - VSTR: 
       wow: 0
       disabled: 0
       values: 
+    - VSTR: zzzz
+      wow: 0
+      disabled: 1
+      values: 
     - VSTR: 
       wow: 0
       disabled: 0
       values: 0000000000000000
-    - VSTR: 
-      wow: 0
-      disabled: 0
-      values: 
-    - VSTR: 
-      wow: 0
-      disabled: 0
-      values: 
     str: 
     str2: 
     zzzz: 0

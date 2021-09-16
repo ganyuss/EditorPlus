@@ -99,8 +99,7 @@ namespace EditorPlus.Editor {
                     }
                 };
             }
-            catch (Exception e) {
-                Debug.Log(e.GetType().Name);
+            catch (Exception) {
                 RemoveMethodError = true;
             }
         }
