@@ -44,7 +44,7 @@ namespace EditorPlus.Editor {
         
         protected override bool PropertyDisabled(SerializedProperty property) {
             EditorUtils.GetMemberInfo(property, CurrentAttribute.MemberName, out var targetObject, out var targetMember);
-            return EditorUtils.GetGeneralValue<bool>(targetObject, targetMember);
+            return Equals(EditorUtils.GetGeneralValue<object>(targetObject, targetMember), CurrentAttribute.OptionalTargetValue);
         }
     }
     
@@ -53,7 +53,7 @@ namespace EditorPlus.Editor {
         
         protected override bool PropertyDisabled(SerializedProperty property) {
             EditorUtils.GetMemberInfo(property, CurrentAttribute.MemberName, out var targetObject, out var targetMember);
-            return !EditorUtils.GetGeneralValue<bool>(targetObject, targetMember);
+            return !Equals(EditorUtils.GetGeneralValue<object>(targetObject, targetMember), CurrentAttribute.OptionalTargetValue);
         }
     }
 }

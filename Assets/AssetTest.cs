@@ -77,7 +77,7 @@ public class AssetTest : ScriptableObject {
     public class V {
         [EnableIf(nameof(disabled))]
         public string VSTR;
-        [DisableIf(nameof(disabled))]
+        [DisableIf(nameof(disabled), false)]
         public int wow;
         public bool disabled;
         public int[] values;
