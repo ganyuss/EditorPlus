@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16c0adaa0cf0a5549917b8a094766a50, type: 3}
   m_Name: EditorPlusEditorGeneratedCodeFolderLocator
   m_EditorClassIdentifier: 
-  FolderId: EditorPlus.GeneratedCode.Editor
+  FolderId: EditorPlus.Editor.GeneratedCode
