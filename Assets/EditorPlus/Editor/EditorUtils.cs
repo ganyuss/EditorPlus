@@ -38,19 +38,6 @@ namespace EditorPlus.Editor {
             rect.height -= otherRect.height;
         }
 
-        public static Vector2 ScrollView(Rect scrollViewPosition, float innerHeight, Vector2 scroll, Action<Rect> insideScrollView) {
-            Rect innerRect = new Rect(0, 0, scrollViewPosition.width, innerHeight);
-            if (innerHeight > scrollViewPosition.height) {
-                innerRect.width -= GUI.skin.verticalScrollbar.fixedWidth;
-            }
-
-            Vector2 newScroll = GUI.BeginScrollView(scrollViewPosition, scroll, innerRect);
-            insideScrollView.Invoke(innerRect);
-            GUI.EndScrollView();
-
-            return newScroll;
-        }
-
 
         public static void GetMemberInfo(SerializedProperty property, out object targetObject,
             out MemberInfo targetMember) 
@@ -90,15 +77,6 @@ namespace EditorPlus.Editor {
             memberPath[memberPath.Count - 1] = relativeMemberPath;
 
             GetMemberInfo(startingObject, memberPath, out targetObject, out targetMember);
-        }
-
-        public static void GetMemberInfo(
-            object startingObject, string memberPath, 
-            out object targetObject, out MemberInfo targetMember) {
-            
-            List<string> memberPathList = memberPath.Split('.').ToList();
-
-            GetMemberInfo(startingObject, memberPathList, out targetObject, out targetMember);
         }
 
         public static void GetMemberInfo(object startingObject, List<string> memberPath,
