@@ -9,10 +9,16 @@ using UnityEngine;
 
 namespace EditorPlus.Editor {
     
+    /// <summary>
+    /// Helper class with editor functions used in EditorPlus.
+    /// </summary>
     public static class EditorUtils {
 
         public const string MultipleValueString = "—";
         
+        /// <summary>
+        /// The background color of the editor, depending on the editor skin selected.
+        /// </summary>
         public static Color BackgroundColor {
             get {
                 if (EditorGUIUtility.isProSkin)
@@ -23,6 +29,10 @@ namespace EditorPlus.Editor {
             }
         }
         
+        /// <summary>
+        /// An alternative background color tu use in the editor. This color is used
+        /// to differentiate elements in lists. 
+        /// </summary>
         public static Color AccentBackgroundColor {
             get {
                 if (EditorGUIUtility.isProSkin)
@@ -33,16 +43,56 @@ namespace EditorPlus.Editor {
             }
         }
 
+        /// <summary>
+        /// If otherRect has been created by copying rect and changing its height,
+        /// Using this function will update rect to go right beneath otherRect.
+        /// <br /><br />
+        /// This is particularly useful in the decorator/drawer scheme used in EditorPlus,
+        /// where decorators and drawers must return a new rect below what they
+        /// drawn after drawing.
+        /// </summary>
+        /// <example><code>
+        /// Rect controlRect = new Rect(rect) { height = GetControlHeight() };
+        /// EditorGUI.DrawControl(controlRect);
+        /// rect.ToBottomOf(controlRect);
+        /// </code></example>
+        /// <param name="rect">The rect to place at the bottom.</param>
+        /// <param name="otherRect">The reference rect.</param>
         public static void ToBottomOf(this ref Rect rect, Rect otherRect) {
-            rect.y += otherRect.height;
-            rect.height -= otherRect.height;
+            float delta = otherRect.yMax - rect.y;
+            rect.y += delta;
+            rect.height -= delta;
         }
 
-
+        /// <summary>
+        /// Gives the member info associated to the given property, along with the
+        /// parent instance the member is related to. It will search it starting from
+        /// <c>property.serializedObject.targetObject</c>.
+        /// </summary>
+        /// <param name="property">The property we want to get the member from.</param>
+        /// <param name="targetObject">The parent instance of the property.</param>
+        /// <param name="targetMember">The member info related to the property.</param>
+        /// <seealso cref="GetGeneralValue&lt;T&gt;"/>
+        /// <seealso cref="SetGeneralValue"/>
+        /// <seealso cref="SerializedProperty.hasMultipleDifferentValues">SerializedProperty.hasMultipleDifferentValues</seealso>
         public static void GetMemberInfo(SerializedProperty property, out object targetObject,
             out MemberInfo targetMember) 
             => GetMemberInfo(property.serializedObject.targetObject, property, out targetObject, out targetMember);
-
+        
+        /// <summary>
+        /// Gives the member info associated to the given property, along with the
+        /// parent instance the member is related to. The search will start from
+        /// the given parent object instead of <c>property.serializedObject.targetObject</c>.
+        /// <br /><br />
+        /// This is especially useful when editing multiple objects.
+        /// </summary>
+        /// <param name="parentObject">The serialized object's target instance to start from.</param>
+        /// <param name="property">The property we want to get the member from.</param>
+        /// <param name="targetObject">The parent instance of the property.</param>
+        /// <param name="targetMember">The member info related to the property.</param>
+        /// <seealso cref="GetGeneralValue&lt;T&gt;"/>
+        /// <seealso cref="SetGeneralValue"/>
+        /// <seealso cref="SerializedProperty.hasMultipleDifferentValues">SerializedProperty.hasMultipleDifferentValues</seealso>
         public static void GetMemberInfo(object parentObject, SerializedProperty property, out object targetObject, out MemberInfo targetMember) {
             if (string.IsNullOrEmpty(property.propertyPath)) {
                 targetObject = null;
@@ -55,6 +105,29 @@ namespace EditorPlus.Editor {
             GetMemberInfo(parentObject, memberPath, out targetObject, out targetMember);
         }
         
+        /// <summary>
+        /// Gives the member info of the member name relativeMemberPath, sibling member
+        /// of the member associated to the given property, along with the
+        /// parent instance the member is related to. The search will start from
+        /// the given parent object instead of <c>property.serializedObject.targetObject</c>.
+        /// <br /><br />
+        /// This is especially useful when editing multiple objects.
+        /// </summary>
+        /// <example>
+        /// Let us take the class A as follows:
+        /// <code>class A : ScriptableObject {public int b; public int c;}</code>
+        /// If we have the SerializedProperty associated with the member "b",
+        /// and we call this method with relativeMemberPath = "c", it will give
+        /// the member info related to the "c" member.
+        /// </example>
+        /// <param name="parentObject">The serialized object's target instance to start from.</param>
+        /// <param name="property">The property we want to get the member from.</param>
+        /// <param name="relativeMemberPath">The name of the sibling member.</param>
+        /// <param name="targetObject">The parent instance of the property.</param>
+        /// <param name="targetMember">The member info related to the sibling of the property.</param>
+        /// <seealso cref="GetGeneralValue&lt;T&gt;"/>
+        /// <seealso cref="SetGeneralValue"/>
+        /// <seealso cref="SerializedProperty.hasMultipleDifferentValues">SerializedProperty.hasMultipleDifferentValues</seealso>
         public static void GetMemberInfo(object parentObject, SerializedProperty property, string relativeMemberPath, out object targetObject, out MemberInfo targetMember) {
             if (string.IsNullOrEmpty(property.propertyPath)) {
                 targetObject = null;
@@ -67,7 +140,27 @@ namespace EditorPlus.Editor {
 
             GetMemberInfo(parentObject, memberPath, out targetObject, out targetMember);
         }
-        
+
+        /// <summary>
+        /// Gives the member info of the member name relativeMemberPath, sibling member
+        /// of the member associated to the given property, along with the
+        /// parent instance the member is related to. It will search it starting from
+        /// <c>property.serializedObject.targetObject</c>.
+        /// </summary>
+        /// <example>
+        /// Let us take the class A as follows:
+        /// <code>class A : ScriptableObject {public int b; public int c;}</code>
+        /// If we have the SerializedProperty associated with the member "b",
+        /// and we call this method with relativeMemberPath = "c", it will give
+        /// the member info related to the "c" member.
+        /// </example>
+        /// <param name="property">The property we want to get the member from.</param>
+        /// <param name="relativeMemberPath">The name of the sibling member.</param>
+        /// <param name="targetObject">The parent instance of the property.</param>
+        /// <param name="targetMember">The member info related to the sibling of the property.</param>
+        /// <seealso cref="GetGeneralValue&lt;T&gt;"/>
+        /// <seealso cref="SetGeneralValue"/>
+        /// <seealso cref="SerializedProperty.hasMultipleDifferentValues">SerializedProperty.hasMultipleDifferentValues</seealso>
         public static void GetMemberInfo(
                 SerializedProperty property, string relativeMemberPath, 
                 out object targetObject, out MemberInfo targetMember) {
@@ -79,6 +172,20 @@ namespace EditorPlus.Editor {
             GetMemberInfo(startingObject, memberPath, out targetObject, out targetMember);
         }
 
+        /// <summary>
+        /// Gives the member info of the member at the end of the memberPath, along with the
+        /// parent instance the member is related to. The member path must be a list of the different
+        /// members to get from the startingObject to the target member. It muse also
+        /// use the <see cref="SerializedProperty.propertyPath">SerializedProperty.propertyPath</see>
+        /// syntax, especially for array elements.
+        /// </summary>
+        /// <param name="startingObject">The object to start the search from.</param>
+        /// <param name="memberPath">The path to the target member.</param>
+        /// <param name="targetObject">The parent instance of the member.</param>
+        /// <param name="targetMember">The target member info.</param>
+        /// <seealso cref="GetGeneralValue&lt;T&gt;"/>
+        /// <seealso cref="SetGeneralValue"/>
+        /// <seealso cref="SerializedProperty.hasMultipleDifferentValues">SerializedProperty.hasMultipleDifferentValues</seealso>
         public static void GetMemberInfo(object startingObject, List<string> memberPath,
                 out object targetObject, out MemberInfo targetMember) {
 
@@ -134,6 +241,17 @@ namespace EditorPlus.Editor {
             }
         }
         
+        /// <summary>
+        /// Return the value hold by the object's member described by the member info.
+        /// Will work on member infos describing fields, properties or methods with no arguments. 
+        /// </summary>
+        /// <param name="obj">the object to get the value from.</param>
+        /// <param name="member">The member of the object to get the value from.</param>
+        /// <typeparam name="T">The expected type of the member's value.</typeparam>
+        /// <returns>The value hold by the object's member</returns>
+        /// <exception cref="ArgumentException">The member is not a field, a property nor a method.</exception>
+        /// <exception cref="ArgumentException">The member is a method, but expect arguments.</exception>
+        /// <exception cref="InvalidCastException">The member has the wrong type.</exception>
         public static T GetGeneralValue<T>(object obj, MemberInfo member) {
             if (member.MemberType == MemberTypes.Field) {
                 return (T) ((FieldInfo) member).GetValue(obj);
@@ -148,6 +266,15 @@ namespace EditorPlus.Editor {
             throw new ArgumentException("trying to get generic value of member that is not a property, field or method.");
         }
         
+        /// <summary>
+        /// Sets the value of the member of the parent object to the target value.
+        /// Will work on member infos describing fields or properties. 
+        /// </summary>
+        /// <param name="parentObject">The object with the member to set.</param>
+        /// <param name="member">The target member to set.</param>
+        /// <param name="targetValue">The value to set the member value to.</param>
+        /// <exception cref="ArgumentException">The member is not a field nor a property</exception>
+        /// <exception cref="ArgumentException">The target value has the wrong type.</exception>
         public static void SetGeneralValue(object parentObject, MemberInfo member, object targetValue) {
             if (member.MemberType == MemberTypes.Field) {
                 ((FieldInfo) member).SetValue(parentObject, targetValue);
@@ -174,23 +301,33 @@ namespace EditorPlus.Editor {
             return int.Parse(ArrayDataRegex.Match(memberPath[1]).Groups[1].Captures[0].Value);
         }
 
+        /// <summary>
+        /// Returns true if the given member path is the path to
+        /// an array element. It will return false if the target of the path
+        /// is the value of a field inside an array element, and not directly
+        /// an array element.
+        /// </summary>
+        /// <param name="memberPath">the member path to test.</param>
+        /// <returns>true if the element described by the member path is an array element, otherwise false.</returns>
         public static bool IsForArrayElement(string memberPath) {
             return memberPath.EndsWith(/*data[N*/"]");
         }
 
         /// <summary>
-        /// This method allows to compare a type to its serialized name.
+        /// This method allows to compare a type to its serialized name, as seen
+        /// in a <see cref="SerializedProperty"/>.
         /// </summary>
         /// <param name="type">The type to test</param>
         /// <param name="serializedTypeName">The name as it appears in the serialized property</param>
         /// <returns>true if the type name describes the given type, false otherwise</returns>
+        /// <seealso cref="SerializedProperty.type">SerializedProperty.type</seealso>
         public static bool CompareType(Type type, string serializedTypeName) {
             Dictionary<string, Type> specialTypes = new Dictionary<string, Type> {
                 {"int", typeof(Int32)},
                 {"float", typeof(Single)},
                 {"string", typeof(String)},
             };
-
+            
             if (specialTypes.TryGetValue(serializedTypeName, out var specialType)) {
                 return specialType == type;
             }
@@ -199,10 +336,20 @@ namespace EditorPlus.Editor {
         }
 
 
+        /// <summary>
+        /// This subclass contains all the helper methods related to help boxes. 
+        /// </summary>
         public static class HelpBox {
             private const int paddingHeight = 8;
             private const int marginHeight = 2;
 
+            /// <summary>
+            /// Returns the height required to draw a help box, depending on the text
+            /// and the type of the box.
+            /// </summary>
+            /// <param name="boxText">The text that have to go inside the box.</param>
+            /// <param name="type">The type of the box.</param>
+            /// <returns>The vertical size of the box.</returns>
             public static float GetHeight(string boxText, HelpBoxType type) {
                 // This stops icon shrinking if text content doesn't fill out the container enough.
                 float minHeight = paddingHeight * 5;
@@ -228,10 +375,18 @@ namespace EditorPlus.Editor {
                 return height + EditorGUIUtility.standardVerticalSpacing*2;
             }
             
-            public static Rect GetRect(Rect position, string boxText, HelpBoxType type) {
+            private static Rect GetRect(Rect position, string boxText, HelpBoxType type) {
                 return new Rect(position) {height = GetHeight(boxText, type)};
             }
 
+            /// <summary>
+            /// Draws a help box with the given content and type, at the top of the position
+            /// rect.
+            /// </summary>
+            /// <param name="position">The rect to draw in.</param>
+            /// <param name="boxText">The text to put in the box.</param>
+            /// <param name="type">The type of the box.</param>
+            /// <returns>The rect inside position below the help box, where the next drawers can draw.</returns>
             public static Rect Draw(Rect position, string boxText, HelpBoxType type) {
                 Rect helpBoxRect = GetRect(position, boxText, type);
                 position.ToBottomOf(helpBoxRect);

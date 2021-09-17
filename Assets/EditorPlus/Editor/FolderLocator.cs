@@ -3,6 +3,14 @@ using UnityEditor;
 using UnityEngine;
 
 namespace EditorPlus.Editor {
+    /// <summary>
+    /// These assets allow you to easily locate folders throughout the project.
+    /// Place one in a folder you want to have the path to, assign it a folder ID,
+    /// and then call <see cref="FolderLocator.GetFolder">FolderLocator.GetFolder</see>
+    /// with the said ID to get the folder path directly.
+    /// <br /><br />
+    /// This allows for seamless project folder sorting.   
+    /// </summary>
     public class FolderLocator : ScriptableObject {
 
         public string FolderId;
@@ -25,9 +33,9 @@ namespace EditorPlus.Editor {
             return null;
         }
 
-        // [OnInspectorGUI]
+        [OnEditorGUI]
         public void OnGUI() {
-            EditorGUILayout.HelpBox("This class is used as a marker for a folder.", MessageType.Info);
+            EditorGUILayout.HelpBox("This object is used as a marker for a folder.", MessageType.Info);
         }
     }
 }

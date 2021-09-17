@@ -4,6 +4,15 @@ using UnityEditor;
 using UnityEngine;
 
 namespace EditorPlus.Editor {
+    
+    /// <summary>
+    /// This class adds a menu item "Create ScriptableObject Asset", when right-clicking
+    /// a script asset. If the script defines a scriptable object class, selecting this menu item
+    /// will create a scriptable object in the same folder as the script.
+    /// <br /><br />
+    /// This allows for one time scriptable object instancing without bothering with
+    /// <see cref="CreateAssetMenuAttribute">CreateAssetMenu attributes</see> all around the place.
+    /// </summary>
     public static class OneTimeCreateAsset {
         private const string MenuPath = "Assets/Create ScriptableObject Asset";
     

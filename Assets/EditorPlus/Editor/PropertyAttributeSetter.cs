@@ -8,11 +8,20 @@ using UnityEditorInternal;
 using UnityEngine;
 
 namespace EditorPlus.Editor {
+    /// <summary>
+    /// This class allows for automatic edition of the <see cref="CustomPropertyDrawer"/> attribute
+    /// list associated to EditorPlus' <see cref="CustomUnityDrawer"/>. See this class for more information.
+    /// </summary>
     public class PropertyAttributeSetter : ScriptableObject {
 
         public string GeneratedCodeFolderId = "EditorPlus.GeneratedCode.Editor";
         public string CustomDrawerAttributeFileName = "CustomDrawerAttributeDeclaration.cs";
         
+        [HelpBox("All the namespaces in this list will not be taken in account when " +
+                 "searching for PropertyAttributes that can be drawn using EditorPlus' " +
+                 "CustomUnityDrawer. This can be useful when adding custom Drawers for the attributes " +
+                 "to work with EditorPlus, while letting the regular drawer draw when there is no EditorPlus " +
+                 "decorators. See the CustomPropertyDrawer documentation for more information.", HelpBoxType.Info)]
         [CustomSpace(15, 15)]
         public List<string> PropertyAttributeNamespaceBlackList;
 
