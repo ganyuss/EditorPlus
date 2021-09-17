@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,11 +12,11 @@ namespace EditorPlus.Editor {
         private bool AttributeValueCorrect = true;
         
         protected abstract string MemberName { get; }
-        protected abstract bool PropertyShown(SerializedProperty property);
+        protected abstract bool PropertyShown(List<object> targets, string memberPath);
         
-        public sealed override bool ShowProperty(SerializedProperty property) {
+        public sealed override bool ShowProperty(List<object> targets, string memberPath, SerializedProperty property) {
             try {
-                return PropertyShown(property);
+                return PropertyShown(targets, memberPath);
             }
             catch (Exception) {
                 AttributeValueCorrect = false;
@@ -26,32 +28,50 @@ namespace EditorPlus.Editor {
                                     $"It should be the name of an instance bool field, property or method " +
                                     $"with no parameters.";
         
-        public override float GetHeight(SerializedProperty property, GUIContent label) {
-            return AttributeValueCorrect ? base.GetHeight(property, label): EditorUtils.HelpBox.GetHeight(ErrorText, HelpBoxType.Error);
+        public override float GetHeight(List<object> targets, string memberPath, SerializedProperty property) {
+            return AttributeValueCorrect ? base.GetHeight(targets, memberPath, property): EditorUtils.HelpBox.GetHeight(ErrorText, HelpBoxType.Error);
         }
 
-        protected override Rect OnBeforeGUI(Rect position, string memberPath, SerializedProperty property) {
-            return AttributeValueCorrect ? base.OnBeforeGUI(position, memberPath, property) : EditorUtils.HelpBox.Draw(position, ErrorText, HelpBoxType.Error);
+        public override Rect OnBeforeGUI(Rect position, List<object> targets, string memberPath, SerializedProperty property) {
+            return AttributeValueCorrect ? base.OnBeforeGUI(position, targets, memberPath, property) : EditorUtils.HelpBox.Draw(position, ErrorText, HelpBoxType.Error);
         }
         
-        protected override Rect OnAfterGUI(Rect position, string memberPath, SerializedProperty property) {
-            return AttributeValueCorrect ? base.OnAfterGUI(position, memberPath, property) : position;
+        public override Rect OnAfterGUI(Rect position, List<object> targets, string memberPath, SerializedProperty property) {
+            return AttributeValueCorrect ? base.OnAfterGUI(position, targets, memberPath, property) : position;
         }
     }
 
     public class HideIfDecorator : HideIfDecoratorBase<HideIfAttribute> {
         protected override string MemberName => CurrentAttribute.MemberName;
-        protected override bool PropertyShown(SerializedProperty property) {
-            EditorUtils.GetMemberInfo(property, CurrentAttribute.MemberName, out var targetObject, out var targetMember);
-            return !Equals(EditorUtils.GetGeneralValue<object>(targetObject, targetMember), CurrentAttribute.OptionalTargetValue);
+        protected override bool PropertyShown(List<object> targets, string memberPath) {
+            List<string> memberPathList = memberPath.Split('.').ToList();
+            memberPathList[memberPathList.Count - 1] = CurrentAttribute.MemberName;
+
+            foreach (var target in targets) {
+                EditorUtils.GetMemberInfo(target, memberPathList, out var targetObject, out var targetMember);
+                if (Equals(EditorUtils.GetGeneralValue<object>(targetObject, targetMember),
+                    CurrentAttribute.OptionalTargetValue))
+                    return false;
+            }
+
+            return true;
         }
     }
     
     public class ShowIfDecorator : HideIfDecoratorBase<ShowIfAttribute> {
         protected override string MemberName => CurrentAttribute.MemberName;
-        protected override bool PropertyShown(SerializedProperty property) {
-            EditorUtils.GetMemberInfo(property, CurrentAttribute.MemberName, out var targetObject, out var targetMember);
-            return Equals(EditorUtils.GetGeneralValue<object>(targetObject, targetMember), CurrentAttribute.OptionalTargetValue);
+        protected override bool PropertyShown(List<object> targets, string memberPath) {
+            List<string> memberPathList = memberPath.Split('.').ToList();
+            memberPathList[memberPathList.Count - 1] = CurrentAttribute.MemberName;
+
+            foreach (var target in targets) {
+                EditorUtils.GetMemberInfo(target, memberPathList, out var targetObject, out var targetMember);
+                if (!Equals(EditorUtils.GetGeneralValue<object>(targetObject, targetMember),
+                    CurrentAttribute.OptionalTargetValue))
+                    return false;
+            }
+
+            return true;
         }
     }
 }

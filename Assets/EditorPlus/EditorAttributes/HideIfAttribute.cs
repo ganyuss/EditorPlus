@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 namespace EditorPlus {
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
+    [AttributeUsage(DecoratorAttribute.Targets, AllowMultiple = true)]
     public class HideIfAttribute : PropertyAttribute {
         public string MemberName;
         public object OptionalTargetValue;
@@ -16,7 +16,7 @@ namespace EditorPlus {
         }
     }
     
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
+    [AttributeUsage(DecoratorAttribute.Targets, AllowMultiple = true)]
     public class ShowIfAttribute : PropertyAttribute {
         public string MemberName;
         public object OptionalTargetValue;

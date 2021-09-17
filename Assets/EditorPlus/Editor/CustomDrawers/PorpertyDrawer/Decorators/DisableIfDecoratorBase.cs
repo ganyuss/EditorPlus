@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
@@ -7,13 +8,13 @@ namespace EditorPlus.Editor {
     public abstract class DisableIfDecoratorBase<Attr> : DecoratorBase<Attr> where Attr : PropertyAttribute {
         public override OrderValue Order => OrderValue.VeryFirst;
 
-        protected abstract bool Disable([CanBeNull] SerializedProperty property);
+        protected abstract bool Disable(List<object> targets, string memberPath);
         
         private bool guiEnabled;
 
-        protected override Rect OnBeforeGUI(Rect position, string memberPath, SerializedProperty property) {
+        public override Rect OnBeforeGUI(Rect position, List<object> targets, string memberPath, SerializedProperty property) {
             
-            if (Disable(property)) {
+            if (Disable(targets, memberPath)) {
                 guiEnabled = GUI.enabled;
                 GUI.enabled = false;
             }
@@ -21,8 +22,8 @@ namespace EditorPlus.Editor {
             return position;
         }
 
-        protected override Rect OnAfterGUI(Rect position, string memberPath, SerializedProperty property) {
-            if (Disable(property))
+        public override Rect OnAfterGUI(Rect position, List<object> targets, string memberPath, SerializedProperty property) {
+            if (Disable(targets, memberPath))
                 GUI.enabled = guiEnabled;
             
             return position;

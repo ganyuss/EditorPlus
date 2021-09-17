@@ -2,11 +2,11 @@ using System;
 using UnityEngine;
 
 namespace EditorPlus {
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(DecoratorAttribute.Targets)]
     public class HideInEditModeAttribute : PropertyAttribute
     { }
     
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(DecoratorAttribute.Targets)]
     public class DisableInEditModeAttribute : PropertyAttribute
     { }
 }

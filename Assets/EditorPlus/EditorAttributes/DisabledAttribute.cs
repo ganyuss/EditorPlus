@@ -4,10 +4,6 @@ using UnityEngine;
 
 namespace EditorPlus {
     
-    
-    [AttributeUsage(
-        AttributeTargets.Method 
-        | AttributeTargets.Field
-        | AttributeTargets.Property)]
+    [AttributeUsage(DecoratorAttribute.Targets)]
     public class DisabledAttribute : PropertyAttribute { }
 }

@@ -20,6 +20,7 @@ namespace EditorPlus.Editor {
             public List<Decorator> Decorators;
             public string Name;
             public string MethodName;
+            public List<object> Targets;
 
             public bool Equals(Button other) {
                 return MethodName == other.MethodName
@@ -30,6 +31,7 @@ namespace EditorPlus.Editor {
 
             public void Merge(Button other) {
                 Action += other.Action;
+                Targets.AddRange(other.Targets);
             }
         }
 
@@ -58,7 +60,8 @@ namespace EditorPlus.Editor {
                         Attribute = buttonAttribute,
                         Decorators = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(method),
                         Action = (Action) method.CreateDelegate(typeof(Action), target),
-                        MethodName = method.Name
+                        MethodName = method.Name,
+                        Targets = new List<object> { target }
                     });
                 }
             }
@@ -123,13 +126,16 @@ namespace EditorPlus.Editor {
 
         private Rect Draw(Rect rect, Button button, IEnumerable<object> targets) {
 
+            if (!button.Decorators.All(decorator => decorator.ShowProperty(button.Targets, button.MethodName)))
+                return rect;
+            
             Rect currentRect = new Rect(rect) { height = GetHeight(button) };
             rect.ToBottomOf(currentRect);
             currentRect.y += ButtonMargin;
             currentRect.height -= ButtonMargin;
             
             foreach (var decorator in button.Decorators) {
-                currentRect = decorator.OnBeforeGUI(currentRect, GetPropertyPath(button));
+                currentRect = decorator.OnBeforeGUI(currentRect, button.Targets, button.MethodName);
             }
             
 
@@ -142,23 +148,17 @@ namespace EditorPlus.Editor {
             List<Decorator> reversedDecorators = button.Decorators.ToList();
             reversedDecorators.Reverse();
             foreach (var decorator in reversedDecorators) {
-                currentRect = decorator.OnAfterGUI(currentRect, GetPropertyPath(button));
+                currentRect = decorator.OnAfterGUI(currentRect, button.Targets, button.MethodName);
             }
 
             return rect;
         }
 
-        private string GetPropertyPath(Button button) {
-            if (!string.IsNullOrEmpty(TargetPropertyPath)) {
-                return TargetPropertyPath + "." + button.MethodName;
-            }
-            else {
-                return button.MethodName;
-            }
-        }
-        
         private float GetHeight(Button button) {
-            float height = button.Decorators.Select(d => d.GetHeight()).Sum();
+            if (!button.Decorators.All(decorator => decorator.ShowProperty(button.Targets, button.MethodName)))
+                return 0;
+            
+            float height = button.Decorators.Select(d => d.GetHeight(button.Targets, button.MethodName)).Sum();
             height += GetButtonHeight(button.Attribute.Size);
             height += ButtonMargin * 2;
             

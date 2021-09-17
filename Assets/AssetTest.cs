@@ -44,6 +44,7 @@ public class AssetTest : ScriptableObject {
         Debug.Log("AAAAAAAAAAAAAAA");
     }
     
+    [DisableIf(nameof(ZZZZzz), "slt")]
     [Button(Size = ButtonSize.ExtraLarge)]
     public void e() {
         Debug.Log("EEEEEEEEEEEEEEEEEEEEEE");
@@ -66,6 +67,7 @@ public class AssetTest : ScriptableObject {
         public bool zzzz;
 
         [Button("WWWWWWWWWWWWWWWWWWWW")]
+        [ShowIf(nameof(zzzz))]
         private void test() {
             Debug.Log("AAAAAAAAAAAAAAA z");
         }
@@ -75,7 +77,7 @@ public class AssetTest : ScriptableObject {
     public class V {
         [EnableIf(nameof(disabled))]
         public string VSTR;
-        [DisableIf(nameof(disabled), false)]
+        [DisableIf(nameof(disabled))]
         public int wow;
         public bool disabled;
         public int[] values;

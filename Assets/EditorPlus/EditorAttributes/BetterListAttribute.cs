@@ -1,6 +1,9 @@
+using System;
 using UnityEngine;
 
 namespace EditorPlus {
+    
+    [AttributeUsage(DecoratorAttribute.Targets)]
     public class BetterListAttribute : PropertyAttribute {
         public bool AlwaysExpanded = false;
         

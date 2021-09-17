@@ -1,13 +1,15 @@
+using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 
 namespace EditorPlus.Editor {
     public class HelpBoxDecorator : DecoratorBase<HelpBoxAttribute> {
-        public override float GetHeight(SerializedProperty property, GUIContent label) {
+        public override float GetHeight(List<object> targets, string memberPath, SerializedProperty property) {
             return EditorUtils.HelpBox.GetHeight(CurrentAttribute.Text, CurrentAttribute.Type);
         }
 
-        protected override Rect OnBeforeGUI(Rect position, string memberPath, SerializedProperty property) {
+        public override Rect OnBeforeGUI(Rect position, List<object> targets, string memberPath, SerializedProperty property) {
             if (CurrentAttribute.Position == HelpBoxPosition.Before) {
                 return DrawHelpBox(position);
             }
@@ -15,7 +17,7 @@ namespace EditorPlus.Editor {
             return position;
         }
 
-        protected override Rect OnAfterGUI(Rect position, string memberPath, SerializedProperty property) {
+        public override Rect OnAfterGUI(Rect position, List<object> targets, string memberPath, SerializedProperty property) {
             if (CurrentAttribute.Position == HelpBoxPosition.After) {
                 return DrawHelpBox(position);
             }

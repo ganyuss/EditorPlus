@@ -237,7 +237,7 @@ namespace EditorPlus.Editor {
             }
 
             public float GetHeight(SerializedProperty property) {
-                return Decorators.Select(d => d.GetHeight(property, null)).Sum()
+                return Decorators.Select(d => d.GetHeight(property)).Sum()
                        + ActualDrawer.GetHeight(property, null);
             }
             

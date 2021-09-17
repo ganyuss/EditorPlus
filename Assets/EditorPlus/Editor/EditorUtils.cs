@@ -78,7 +78,7 @@ namespace EditorPlus.Editor {
 
             GetMemberInfo(startingObject, memberPath, out targetObject, out targetMember);
         }
-        
+
         public static void GetMemberInfo(
             object startingObject, string memberPath, 
             out object targetObject, out MemberInfo targetMember) {
@@ -88,7 +88,7 @@ namespace EditorPlus.Editor {
             GetMemberInfo(startingObject, memberPathList, out targetObject, out targetMember);
         }
 
-        private static void GetMemberInfo(object startingObject, List<string> memberPath,
+        public static void GetMemberInfo(object startingObject, List<string> memberPath,
                 out object targetObject, out MemberInfo targetMember) {
 
             BindingFlags BindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance

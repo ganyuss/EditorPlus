@@ -61,7 +61,7 @@ namespace EditorPlus.Editor {
             
             float height = 0;
             foreach (var decorator in decorators) {
-                height += decorator.GetHeight(property, label);
+                height += decorator.GetHeight(property);
             }
 
             float propertyHeight = GetPropertyDrawer(property).GetHeight(property, label);

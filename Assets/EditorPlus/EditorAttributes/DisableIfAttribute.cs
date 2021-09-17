@@ -2,7 +2,8 @@ using System;
 using UnityEngine;
 
 namespace EditorPlus {
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
+    
+    [AttributeUsage(DecoratorAttribute.Targets, AllowMultiple = true)]
     public class DisableIfAttribute : PropertyAttribute {
         public string MemberName;
         public object OptionalTargetValue;
@@ -16,7 +17,7 @@ namespace EditorPlus {
         }
     }
     
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(DecoratorAttribute.Targets, AllowMultiple = true)]
     public class EnableIfAttribute : PropertyAttribute {
         public string MemberName;
         public object OptionalTargetValue;

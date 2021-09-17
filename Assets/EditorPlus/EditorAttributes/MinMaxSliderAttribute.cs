@@ -4,9 +4,7 @@ using UnityEngine;
 
 namespace EditorPlus {
     
-    [AttributeUsage(
-        AttributeTargets.Field
-        | AttributeTargets.Property)]
+    [AttributeUsage(DecoratorAttribute.Targets)]
     public class MinMaxSliderAttribute : PropertyAttribute {
 
         public float SliderMin;
