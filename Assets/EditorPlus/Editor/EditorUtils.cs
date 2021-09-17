@@ -68,6 +68,19 @@ namespace EditorPlus.Editor {
             GetMemberInfo(parentObject, memberPath, out targetObject, out targetMember);
         }
         
+        public static void GetMemberInfo(object parentObject, SerializedProperty property, string relativeMemberPath, out object targetObject, out MemberInfo targetMember) {
+            if (string.IsNullOrEmpty(property.propertyPath)) {
+                targetObject = null;
+                targetMember = null;
+                return;
+            }
+
+            List<string> memberPath = property.propertyPath.Split('.').ToList();
+            memberPath[memberPath.Count - 1] = relativeMemberPath;
+
+            GetMemberInfo(parentObject, memberPath, out targetObject, out targetMember);
+        }
+        
         public static void GetMemberInfo(
                 SerializedProperty property, string relativeMemberPath, 
                 out object targetObject, out MemberInfo targetMember) {
@@ -155,6 +168,19 @@ namespace EditorPlus.Editor {
             }
 
             throw new ArgumentException("trying to get generic value of member that is not a property, field or method.");
+        }
+        
+        public static void SetGeneralValue(object parentObject, MemberInfo member, object targetValue) {
+            if (member.MemberType == MemberTypes.Field) {
+                ((FieldInfo) member).SetValue(parentObject, targetValue);
+                return;
+            }
+            if (member.MemberType == MemberTypes.Property) {
+                ((PropertyInfo) member).SetValue(parentObject, targetValue);
+                return;
+            }
+
+            throw new ArgumentException("trying to set generic value of member that is not a property or field.");
         }
 
 

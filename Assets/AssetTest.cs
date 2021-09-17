@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using EditorPlus;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -37,11 +38,23 @@ public class AssetTest : ScriptableObject {
     public E EEEEEEEEEE;
 
     public string ZZZZzz;
+
+    [Dropdown(new[] { "test1", "test2" })]
+    public string DropdownTest;
     
+    [Dropdown(nameof(dropdownInt))]
+    public int DropdownTest2;
+
+    private DropdownList<int> dropdownInt() => new DropdownList<int> {["one"] = 1, ["two"] = 2, ["three"] = 3};
+
+    [Tag]
+    public string TagExample;
+
     //[CustomSpace(10 ,10)]
     [Button("test")]
     public void a() {
-        Debug.Log("AAAAAAAAAAAAAAA");
+        Debug.Log("1: " + DropdownTest);
+        Debug.Log("2: " + DropdownTest2);
     }
     
     [DisableIf(nameof(ZZZZzz), "slt")]
