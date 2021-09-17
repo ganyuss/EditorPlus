@@ -13,7 +13,7 @@ namespace EditorPlus.Editor {
         public string GeneratedCodeFolderId = "EditorPlus.GeneratedCode.Editor";
         public string CustomDrawerAttributeFileName = "CustomDrawerAttributeDeclaration.cs";
         
-        [CustomSpace(10, 10)]
+        [CustomSpace(15, 15)]
         public List<string> PropertyAttributeNamespaceBlackList;
 
         [Button]
