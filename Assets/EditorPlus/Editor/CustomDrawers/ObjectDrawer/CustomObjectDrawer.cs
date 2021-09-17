@@ -126,8 +126,10 @@ namespace EditorPlus.Editor {
 
         public float GetPropertyHeight(bool showLabel = true) {
             float fieldHeight;
-            if (IsPropertyToDrawAsDefault(Property))
-                fieldHeight = EditorGUI.GetPropertyHeight(Property, showLabel ? new GUIContent(Property.displayName) : GUIContent.none);
+            if (IsPropertyToDrawAsDefault(Property)) {
+                fieldHeight = EditorGUI.GetPropertyHeight(Property,
+                    showLabel ? new GUIContent(Property.displayName) : GUIContent.none);
+            }
             else if (Property.isArray) {
                 fieldHeight = GetListDrawer(Property).GetHeight(Property);
             }
@@ -158,7 +160,11 @@ namespace EditorPlus.Editor {
             }
 
             if (IsPropertyToDrawAsDefault(Property)) {
+                if (Property.name == "m_Script")
+                    GUI.enabled = false;
                 EditorGUI.PropertyField(rect, Property, showLabel ? new GUIContent(Property.displayName) : GUIContent.none);
+                if (Property.name == "m_Script")
+                    GUI.enabled = true;
             }
             else if (Property.isArray) {
                 DrawList(Property, rect);
@@ -189,6 +195,7 @@ namespace EditorPlus.Editor {
                     int startDepth = Property.depth;
                     if (nextProperty.NextVisible(true)) {
                         do {
+                            
                             SerializedPropertyDrawer drawer = DrawerList.GetDrawer(nextProperty);
                             Rect propertyRect = new Rect(rect) { height = drawer.GetPropertyHeight() }; 
                             drawer.Draw(propertyRect);
