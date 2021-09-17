@@ -13,13 +13,9 @@ namespace EditorPlus.Editor {
 	[CustomPropertyDrawer(typeof(EditorPlus.ShowIfAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.HideInPlayModeAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.DisableInPlayModeAttribute))]
-	[CustomPropertyDrawer(typeof(UnityEngine.SpaceAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.Editor.DefaultPropertyAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.DropdownAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.MinMaxSliderAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.TagAttribute))]
-	[CustomPropertyDrawer(typeof(UnityEngine.MultilineAttribute))]
-	[CustomPropertyDrawer(typeof(UnityEngine.RangeAttribute))]
-	[CustomPropertyDrawer(typeof(UnityEngine.TextAreaAttribute))]
 	public partial class CustomUnityDrawer { }
 }
