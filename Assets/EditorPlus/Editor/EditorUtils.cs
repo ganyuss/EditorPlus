@@ -174,6 +174,10 @@ namespace EditorPlus.Editor {
             return int.Parse(ArrayDataRegex.Match(memberPath[1]).Groups[1].Captures[0].Value);
         }
 
+        public static bool IsForArrayElement(string memberPath) {
+            return memberPath.EndsWith(/*data[N*/"]");
+        }
+
         /// <summary>
         /// This method allows to compare a type to its serialized name.
         /// </summary>
