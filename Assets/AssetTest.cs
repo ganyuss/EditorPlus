@@ -49,6 +49,9 @@ public class AssetTest : ScriptableObject {
 
     [Tag]
     public string TagExample;
+    
+    [Dropdown(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 })]
+    public int Digit;
 
     //[CustomSpace(10 ,10)]
     [Button("test")]

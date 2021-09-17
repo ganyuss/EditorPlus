@@ -1,14 +1,9 @@
-
-
+using System;
+using JetBrains.Annotations;
 using UnityEngine;
 
-namespace EditorPlus
-{
-    using System;
-    using JetBrains.Annotations;
-
-    public enum ButtonSize
-    {
+namespace EditorPlus {
+    public enum ButtonSize {
         Small,
         Regular,
         Large,
@@ -28,7 +23,12 @@ namespace EditorPlus
     /// </code></example>
     [AttributeUsage(AttributeTargets.Method)]
     [MeansImplicitUse]
-    public sealed class ButtonAttribute : PropertyAttribute {
+    public class ButtonAttribute : PropertyAttribute {
+        
+        /// <summary>
+        /// The label of the button. if left to null, will use the name
+        /// of the associated method instead.
+        /// </summary>
         public readonly string Name;
 
         public ButtonAttribute() { }
@@ -39,6 +39,6 @@ namespace EditorPlus
         /// Indicates the size of the button.
         /// Defaults to <see cref="ButtonSize.Regular"/>.
         /// </summary>
-        public ButtonSize Size { get; set; } = ButtonSize.Regular;
+        public ButtonSize Size = ButtonSize.Regular;
     }
 }

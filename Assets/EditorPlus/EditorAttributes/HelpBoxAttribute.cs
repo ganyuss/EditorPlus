@@ -10,16 +10,32 @@ namespace EditorPlus {
         Error
     }
     
+    /// <summary>
+    /// The position of a help box, relative to the property drawer. 
+    /// </summary>
     public enum HelpBoxPosition {
         Before,
         After
     }
     
+    /// <summary>
+    /// Attribute to add a help box around a field editor. 
+    /// </summary>
     [AttributeUsage(EditorPlusAttribute.DecoratorTargets)]
     public class HelpBoxAttribute : PropertyAttribute {
-        public HelpBoxType Type = HelpBoxType.None;
-        public HelpBoxPosition Position = HelpBoxPosition.Before;
+        
+        /// <summary>
+        /// The content of the help box.
+        /// </summary>
         public string Text;
+        /// <summary>
+        /// The type of the icon to display on the left hand side of the help box.
+        /// </summary>
+        public HelpBoxType Type = HelpBoxType.None;
+        /// <summary>
+        /// The position of the help box, relative to the property drawer. 
+        /// </summary>
+        public HelpBoxPosition Position = HelpBoxPosition.Before;
         
         public HelpBoxAttribute(string text) => Text = text;
         
