@@ -31,7 +31,7 @@ namespace EditorPlus.Editor {
             VeryFirst,
             /// <summary>
             /// Use <see cref="First"/> for decorator that must be the first ones to draw something in the editor,
-            /// like headers.
+            /// like spaces.
             /// </summary>
             First,
             /// <summary>

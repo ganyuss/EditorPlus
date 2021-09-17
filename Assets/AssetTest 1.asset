@@ -24,8 +24,10 @@ MonoBehaviour:
   field: 
   Disabled: 0
   ListDrawer:
-  - 2
-  - 1
+  - 7
+  - 4
+  - 4
+  - 4
   EEEEEEEEEE:
     W:
     - VSTR: 
@@ -35,3 +37,7 @@ MonoBehaviour:
     str: 
     str2: 
     zzzz: 0
+  ZZZZzz: 
+  DropdownTest: test1
+  DropdownTest2: 3
+  TagExample: Untagged

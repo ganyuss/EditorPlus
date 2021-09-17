@@ -2,6 +2,7 @@ using UnityEditor;
 
 namespace EditorPlus.Editor {
 
+	[CustomPropertyDrawer(typeof(EditorPlus.CustomSpaceAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.DisableIfAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.EnableIfAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.DisabledAttribute))]
@@ -12,7 +13,7 @@ namespace EditorPlus.Editor {
 	[CustomPropertyDrawer(typeof(EditorPlus.ShowIfAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.HideInPlayModeAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.DisableInPlayModeAttribute))]
-	[CustomPropertyDrawer(typeof(EditorPlus.CustomSpaceAttribute))]
+	[CustomPropertyDrawer(typeof(UnityEngine.SpaceAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.Editor.DefaultPropertyAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.DropdownAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.MinMaxSliderAttribute))]
