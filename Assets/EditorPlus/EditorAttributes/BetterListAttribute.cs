@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EditorPlus {
     
-    [AttributeUsage(DecoratorAttribute.Targets)]
+    [AttributeUsage(EditorPlusAttribute.AttributeDrawerTargets)]
     public class BetterListAttribute : PropertyAttribute {
         public bool AlwaysExpanded = false;
         

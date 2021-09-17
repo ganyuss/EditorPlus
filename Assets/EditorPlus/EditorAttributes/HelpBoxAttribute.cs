@@ -15,7 +15,7 @@ namespace EditorPlus {
         After
     }
     
-    [AttributeUsage(DecoratorAttribute.Targets)]
+    [AttributeUsage(EditorPlusAttribute.DecoratorTargets)]
     public class HelpBoxAttribute : PropertyAttribute {
         public HelpBoxType Type = HelpBoxType.None;
         public HelpBoxPosition Position = HelpBoxPosition.Before;

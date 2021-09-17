@@ -26,7 +26,7 @@ namespace EditorPlus
     ///     Debug.Log("Clicked!");
     /// }
     /// </code></example>
-    [AttributeUsage(DecoratorAttribute.Targets)]
+    [AttributeUsage(AttributeTargets.Method)]
     [MeansImplicitUse]
     public sealed class ButtonAttribute : PropertyAttribute {
         public readonly string Name;

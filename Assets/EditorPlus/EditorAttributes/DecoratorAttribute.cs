@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 
-public class DecoratorAttribute {
-    public const AttributeTargets Targets = AttributeTargets.Field | AttributeTargets.Method;
+public class EditorPlusAttribute {
+    public const AttributeTargets DecoratorTargets = AttributeTargets.Field | AttributeTargets.Method;
+    public const AttributeTargets AttributeDrawerTargets = AttributeTargets.Field;
 }

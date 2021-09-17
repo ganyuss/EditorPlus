@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 
 namespace EditorPlus {
-    [AttributeUsage(DecoratorAttribute.Targets)]
+    [AttributeUsage(AttributeTargets.Method)]
     [MeansImplicitUse]
     public class OnEditorGUIAttribute : PropertyAttribute {
 
