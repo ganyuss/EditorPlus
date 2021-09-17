@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -31,7 +32,27 @@ namespace EditorPlus.Editor {
         public ListPropertyDrawer(SerializedProperty property, SerializedPropertyDrawerList drawerList) {
             CurrentProperty = property.Copy();
             DrawerList = drawerList;
+
             
+            if (property.hasMultipleDifferentValues) {
+                InnerList = new ReorderableList(new List<object>(), typeof(object)) {
+                    onCanAddCallback = list => false,
+                    onCanRemoveCallback = list => false,
+                    drawNoneElementCallback = rect => {
+                        EditorGUI.LabelField(rect, "List targeting multiple different instances");
+                    },
+                    drawHeaderCallback = rect => {
+                        const float indentSize = 15;
+                        float displacement = EditorGUI.indentLevel * indentSize;
+                        rect.x -= displacement;
+                        rect.width += displacement;
+                        EditorGUI.LabelField(rect, CurrentProperty.displayName);
+                    },
+                };
+                
+                return;
+            }
+
             InnerList = new ReorderableList(CurrentProperty.serializedObject, CurrentProperty) {
                 drawHeaderCallback = DrawListHeader,
                 drawElementCallback = DrawElement,
@@ -124,6 +145,11 @@ namespace EditorPlus.Editor {
         }
 
         public float GetHeight(SerializedProperty property, GUIContent label) {
+
+            if (property.hasMultipleDifferentValues) {
+                return InnerList.GetHeight();
+            }
+
             InnerList.serializedProperty = property;
 
             float height = 0;
@@ -140,12 +166,22 @@ namespace EditorPlus.Editor {
 
         public Rect OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 
-            InnerList.serializedProperty = property;
             Rect listRect = new Rect(position) {height = GetHeight(property, label)};
             
-            if (AddMethodError) listRect = EditorUtils.HelpBox.Draw(listRect, AddMethodErrorText, HelpBoxType.Error);
-            if (RemoveMethodError) listRect = EditorUtils.HelpBox.Draw(listRect, RemoveMethodErrorText, HelpBoxType.Error);
+            if (property.hasMultipleDifferentValues) {
+                InnerList.DoList(listRect);
+                position.ToBottomOf(listRect);
+                return position;
+            }
             
+            
+            InnerList.serializedProperty = property;
+
+            if (AddMethodError)
+                listRect = EditorUtils.HelpBox.Draw(listRect, AddMethodErrorText, HelpBoxType.Error);
+            if (RemoveMethodError)
+                listRect = EditorUtils.HelpBox.Draw(listRect, RemoveMethodErrorText, HelpBoxType.Error);
+
             if (property.isExpanded || AlwaysExpanded)
                 InnerList.DoList(listRect);
             else

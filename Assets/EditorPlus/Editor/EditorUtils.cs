@@ -94,10 +94,12 @@ namespace EditorPlus.Editor {
             BindingFlags BindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
                                         | BindingFlags.GetField | BindingFlags.GetProperty | BindingFlags.InvokeMethod;
 
+            // Because we will change it, we copy it to prevent errors in the calling context
+            memberPath = memberPath.ToList();
             targetMember = null;
             targetObject = startingObject;
             object nextObject = null;
-
+            
             while (memberPath.Count > 0) {
                 if (IsArrayPath(memberPath)) {
 
