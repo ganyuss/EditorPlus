@@ -8,10 +8,13 @@ using UnityEngine;
 namespace EditorPlus.Editor {
     
     /// <summary>
-    /// This class is the interface between the custom EditorPlus drawer system and the Unity system.
+    /// This class is responsible for drawing all the decorators and drawers.
+    /// To update the list of attributes to draw with this class, use the
+    /// <see cref="PropertyAttributeSetter" /> asset.
+    /// </summary>
     /// <seealso cref="AttributeDrawerBase{Attr}"/>
     /// <seealso cref="DecoratorBase&lt;Attr&gt;"/>
-    /// </summary>
+    /// <seealso cref="DecoratorAndDrawerDatabase"/>
     public partial class CustomUnityDrawer : PropertyDrawer {
 
         private List<Decorator> _decoratorsToUse;
@@ -99,6 +102,13 @@ namespace EditorPlus.Editor {
     
     public class DefaultPropertyAttribute : PropertyAttribute { }
 
+    /// <summary>
+    /// This class is used as the default drawer, in a case where the <see cref="CustomUnityDrawer"/>
+    /// class is used to draw a field on which there are only decorator attributes, and no drawer ones.
+    /// <br /><br />
+    /// This class uses <see cref="EditorGUI.PropertyField(Rect, SerializedProperty, GUIContent)"/> to draw
+    /// the field. 
+    /// </summary>
     public class DefaultDrawer : AttributeDrawerBase<DefaultPropertyAttribute> {
         
         public override float GetHeight(SerializedProperty property, GUIContent label) {
@@ -110,7 +120,9 @@ namespace EditorPlus.Editor {
             float height = GetHeight(property, label);
             Rect propertyRect = new Rect(position) {height = height};
             
-            label.text ??= property.displayName;
+            if (label != null)
+                label.text ??= property.displayName;
+            
             EditorGUI.PropertyField(propertyRect, property, label);
             
             position.ToBottomOf(propertyRect);

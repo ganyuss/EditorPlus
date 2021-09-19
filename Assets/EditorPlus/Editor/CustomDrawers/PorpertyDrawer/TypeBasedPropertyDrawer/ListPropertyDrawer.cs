@@ -11,6 +11,11 @@ using UnityEngine;
 
 namespace EditorPlus.Editor {
     
+    /// <summary>
+    /// This class is directly used by the <see cref="SerializedPropertyDrawer.ListDrawer"/> class
+    /// to draw a list. It takes in account the <see cref="BetterListAttribute">BetterList attribute</see>
+    /// in the drawing.
+    /// </summary>
     public class ListPropertyDrawer {
         
         private ReorderableList InnerList;

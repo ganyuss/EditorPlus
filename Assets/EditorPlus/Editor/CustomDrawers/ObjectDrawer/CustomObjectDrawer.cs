@@ -9,6 +9,14 @@ using Object = UnityEngine.Object;
 
 namespace EditorPlus.Editor {
 
+    /// <summary>
+    /// By implementing this interface, one can add a decorator to any class.
+    /// It allows you to add elements before or after objects in the inspector.
+    /// <br /><br />
+    /// it will be used both on the editor target (<see cref="ScriptableObject"/>,
+    /// <see cref="MonoBehaviour"/> etc.), but also around object fields.
+    /// </summary>
+    /// <seealso cref="DecoratorBase&lt;Attr&gt;"/>
     public interface IClassDecorator {
         public string TargetPropertyPath { set; }
         public void OnEnable(List<object> targets);
@@ -18,11 +26,15 @@ namespace EditorPlus.Editor {
 
     }
     
-#if EDITOR_PLUS_CUSTOM_EDITOR
-    
+#if !EDITOR_PLUS_DISABLE_EDITOR
+    /// <summary>
+    /// This class is the main object editor for the plugin. It draws
+    /// everything using the <see cref="SerializedPropertyDrawer" />.
+    /// </summary>
+    /// <seealso cref="SerializedPropertyDrawerList"/>
     [CustomEditor(typeof(Object), true)]
     [CanEditMultipleObjects]
-    public class CustomObjectEditor : UnityEditor.Editor {
+    public class EditorPlusObjectEditor : UnityEditor.Editor {
 
         private SerializedPropertyDrawerList DrawerList = new SerializedPropertyDrawerList();
 
@@ -38,13 +50,29 @@ namespace EditorPlus.Editor {
             serializedObject.ApplyModifiedProperties();
         }
     }
+#endif
 
+    /// <summary>
+    /// This list holds all the <see cref="SerializedPropertyDrawer"/> instantiated by an editor.
+    /// It allows for efficient instantiating of the drawers.
+    /// <br /><br />
+    /// The drawers are identified using the associated property path.
+    /// The <see cref="SerializedProperty"/> reference is set on every draw.
+    /// </summary>
     public class SerializedPropertyDrawerList {
-        private Dictionary<string, SerializedPropertyDrawer> DrawerCache = new Dictionary<string, SerializedPropertyDrawer>();
+        private readonly Dictionary<string, SerializedPropertyDrawer> DrawerCache = new Dictionary<string, SerializedPropertyDrawer>();
 
+        /// <summary>
+        /// Use this method to get a <see cref="SerializedPropertyDrawer"/> associated
+        /// with the property. Multiple calls to this methods with properties with the
+        /// same <see cref="SerializedProperty.propertyPath">property path</see> will
+        /// return the same drawer.
+        /// </summary>
+        /// <param name="property">The property to get the drawer for</param>
+        /// <returns>A drawer to draw the property.</returns>
         public SerializedPropertyDrawer GetDrawer(SerializedProperty property) {
             if (DrawerCache.TryGetValue(property.propertyPath, out var Drawer)) {
-                Drawer.Property = property;
+                Drawer.Property = property.Copy();
                 return Drawer;
             }
 
@@ -54,15 +82,37 @@ namespace EditorPlus.Editor {
         }
     }
     
+    /// <summary>
+    /// This class is responsible for drawing a <see cref="SerializedProperty"/>.
+    /// There are 3 different cases:
+    /// <ul><li>
+    /// The property describes a field that is a generic object, like an object of
+    /// a custom <see cref="SerializableAttribute">serializable</see> class. The drawer will draw
+    /// the foldout, display decoration from <see cref="IClassDecorator"/> classes,
+    /// and display each sub field using other property drawers.
+    /// </li><li>
+    /// The property describes a list. In that case it will use a <see cref="SerializedPropertyDrawer.ListDrawer"/>
+    /// to display it.
+    /// </li><li>
+    /// Otherwise, the field will be displayed using the
+    /// <see cref="EditorGUI.PropertyField(Rect, SerializedProperty, GUIContent)"/> method.
+    /// this can lead to an indirect use of the <see cref="CustomUnityDrawer"/> class.
+    /// </li></ul>
+    /// </summary>
     public class SerializedPropertyDrawer {
 
         public SerializedProperty Property;
         
-        private SerializedPropertyDrawerList DrawerList;
-        private Dictionary<string, ListDrawer> _listDrawers = new Dictionary<string, ListDrawer>();
+        private readonly SerializedPropertyDrawerList DrawerList;
         private readonly float FieldMargin = EditorGUIUtility.standardVerticalSpacing;
+        private ListDrawer ListDrawerInstance;
         private List<IClassDecorator> _classDecoratorList;
         private List<object> _targetList;
+        
+        public SerializedPropertyDrawer(SerializedProperty property, SerializedPropertyDrawerList drawerList) {
+            Property = property;
+            DrawerList = drawerList;
+        }
 
         private List<IClassDecorator> GetClassDecorators() {
             if (_classDecoratorList != null)
@@ -102,19 +152,12 @@ namespace EditorPlus.Editor {
             return _targetList;
         }
 
-        
-        public SerializedPropertyDrawer(SerializedProperty property, SerializedPropertyDrawerList drawerList) {
-            Property = property;
-            DrawerList = drawerList;
-        }
-        
         private ListDrawer GetListDrawer(SerializedProperty property) {
-            if (_listDrawers.TryGetValue(property.propertyPath, out var value)) {
-                return value;
+            if (ListDrawerInstance is null) {
+                ListDrawerInstance = new ListDrawer(property, DrawerList);
             }
 
-            _listDrawers[property.propertyPath] = new ListDrawer(property, DrawerList);
-            return _listDrawers[property.propertyPath];
+            return ListDrawerInstance;
         }
 
         public float GetPropertyHeight(bool showLabel = true) {
@@ -222,6 +265,11 @@ namespace EditorPlus.Editor {
             GetListDrawer(property).Draw(property, rect);
         }
         
+        /// <summary>
+        /// This class is used to draw a list in the unity editor, a bit differently than
+        /// the regular editor list. Especially, this class uses the <see cref="ListPropertyDrawer"/>
+        /// class, which takes in account the <see cref="BetterListAttribute">BetterList attribute</see>.
+        /// </summary>
         private class ListDrawer {
             List<Decorator> Decorators;
             List<Decorator> DecoratorsReversed;
@@ -258,5 +306,4 @@ namespace EditorPlus.Editor {
             }
         }
     }
-#endif
 }

@@ -6,6 +6,12 @@ using UnityEngine;
 
 
 namespace EditorPlus.Editor {
+    
+    /// <summary>
+    /// An <see cref="IClassDecorator" /> to call methods marked with the
+    /// <see cref="OnEditorGUIAttribute">OnEditorGUI attribute</see>
+    /// of an edited object.
+    /// </summary>
     public class OnEditorGUIDrawer : IClassDecorator {
         
         public string TargetPropertyPath { get; set; }

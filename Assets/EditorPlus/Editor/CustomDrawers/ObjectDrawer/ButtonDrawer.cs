@@ -8,6 +8,11 @@ using Object = UnityEngine.Object;
 
 namespace EditorPlus.Editor {
     
+    /// <summary>
+    /// An <see cref="IClassDecorator" /> to draw buttons at the bottom of
+    /// an editor, to trigger methods marked with the <see cref="ButtonAttribute">
+    /// Button attribute</see>.
+    /// </summary>
     public class ButtonDrawer : IClassDecorator {
         
         public string TargetPropertyPath { get; set; }
@@ -154,6 +159,11 @@ namespace EditorPlus.Editor {
             return rect;
         }
 
+        /// <summary>
+        /// Returns the height of a given button, decorators included.
+        /// </summary>
+        /// <param name="button">A button.</param>
+        /// <returns>The height of the given button.</returns>
         private float GetHeight(Button button) {
             if (!button.Decorators.All(decorator => decorator.ShowProperty(button.Targets, button.MethodName)))
                 return 0;
@@ -165,6 +175,12 @@ namespace EditorPlus.Editor {
             return height;
         }
 
+        /// <summary>
+        /// Return the size of a button according to its <see cref="ButtonSize"/>.
+        /// This method does not take in account the decorators around the button.
+        /// </summary>
+        /// <param name="size">The size attribute of the button.</param>
+        /// <returns>The height of the button.</returns>
         private float GetButtonHeight(ButtonSize size) {
             switch (size) {
                 case ButtonSize.Small:
