@@ -32,7 +32,8 @@ public class AssetTest : ScriptableObject {
     public string field;
     public bool Disabled;
     
-    [BetterList(AlwaysExpanded = false)]
+    [HelpBox("List propagation test")]
+    [BetterList(AlwaysExpanded = true)]
     public string[] ListDrawer;
 
     public E EEEEEEEEEE;

@@ -24,6 +24,12 @@ namespace EditorPlus.Editor {
         private List<Decorator> GetDecoratorsToUse(SerializedProperty property) {
             if (_decoratorsToUse != null)
                 return _decoratorsToUse;
+
+            // We do not want list decorators to also be used inside the list. 
+            if (EditorUtils.IsForArrayElement(property.propertyPath)) {
+                _decoratorsToUse = new List<Decorator>();
+                return _decoratorsToUse;
+            }
             
             EditorUtils.GetMemberInfo(property, out _, out var targetMemberInfo);
             _decoratorsToUse = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(targetMemberInfo);
