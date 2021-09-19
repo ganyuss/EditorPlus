@@ -23,13 +23,8 @@ namespace EditorPlus.Editor {
     [CustomEditor(typeof(Object), true)]
     [CanEditMultipleObjects]
     public class CustomObjectEditor : UnityEditor.Editor {
-        private List<IClassDecorator> Editors;
 
         private SerializedPropertyDrawerList DrawerList = new SerializedPropertyDrawerList();
-
-        private void OnEnable() {
-
-        }
 
         public override void OnInspectorGUI() {
             serializedObject.Update();
@@ -42,8 +37,6 @@ namespace EditorPlus.Editor {
 
             serializedObject.ApplyModifiedProperties();
         }
-
-
     }
 
     public class SerializedPropertyDrawerList {
@@ -79,7 +72,7 @@ namespace EditorPlus.Editor {
                 .Select(TypeUtils.CreateInstance<IClassDecorator>)
                 .ToList();
             
-            List<object> targetList = GetTargetList();
+            List<object> targetList = GetTargets();
             
             foreach (var classDecorator in _classDecoratorList) {
                 classDecorator.TargetPropertyPath = Property.propertyPath;
@@ -89,7 +82,7 @@ namespace EditorPlus.Editor {
             return _classDecoratorList;
         }
 
-        private List<object> GetTargetList() {
+        private List<object> GetTargets() {
             if (_targetList != null)
                 return _targetList;
             
@@ -145,7 +138,7 @@ namespace EditorPlus.Editor {
                 }
                 
                 List<IClassDecorator> decorators = GetClassDecorators();
-                List<object> targets = GetTargetList();
+                List<object> targets = GetTargets();
 
                 fieldHeight += decorators.Select(d => d.GetHeight(targets)).Sum();
             }
@@ -185,7 +178,7 @@ namespace EditorPlus.Editor {
                 if (Property.isExpanded) {
                     
                     List<IClassDecorator> decorators = GetClassDecorators();
-                    List<object> targets = GetTargetList();
+                    List<object> targets = GetTargets();
                     
                     foreach (var decorator in decorators) {
                         rect = decorator.OnInspectorGUIBefore(rect, targets);
