@@ -10,7 +10,7 @@ using UnityEngine;
 namespace EditorPlus.Editor {
     /// <summary>
     /// This class allows for automatic edition of the <see cref="CustomPropertyDrawer"/> attribute
-    /// list associated to EditorPlus' <see cref="CustomUnityDrawer"/>. See this class for more information.
+    /// list associated to EditorPlus' <see cref="EditorPlusPropertyDrawer"/>. See this class for more information.
     /// </summary>
     public class PropertyAttributeSetter : ScriptableObject {
 
@@ -45,7 +45,7 @@ namespace EditorPlus.Editor {
             foreach (var attributeType in attributeTypes) {
                 fileContents.Append($"\t[CustomPropertyDrawer(typeof({attributeType.FullName}))]\n");
             }
-            fileContents.Append($"\tpublic partial class {nameof(CustomUnityDrawer)} {{ }}\n");
+            fileContents.Append($"\tpublic partial class {nameof(EditorPlusPropertyDrawer)} {{ }}\n");
             fileContents.Append("}\n");
             
             File.WriteAllText(drawerAttributeFilePath, fileContents.ToString());

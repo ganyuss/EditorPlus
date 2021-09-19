@@ -15,7 +15,7 @@ namespace EditorPlus.Editor {
     /// <seealso cref="AttributeDrawerBase{Attr}"/>
     /// <seealso cref="DecoratorBase&lt;Attr&gt;"/>
     /// <seealso cref="DecoratorAndDrawerDatabase"/>
-    public partial class CustomUnityDrawer : PropertyDrawer {
+    public partial class EditorPlusPropertyDrawer : PropertyDrawer {
 
         private List<Decorator> _decoratorsToUse;
         private List<Decorator> _decoratorsToUseReversed;
@@ -109,7 +109,7 @@ namespace EditorPlus.Editor {
     public class DefaultPropertyAttribute : PropertyAttribute { }
 
     /// <summary>
-    /// This class is used as the default drawer, in a case where the <see cref="CustomUnityDrawer"/>
+    /// This class is used as the default drawer, in a case where the <see cref="EditorPlusPropertyDrawer"/>
     /// class is used to draw a field on which there are only decorator attributes, and no drawer ones.
     /// <br /><br />
     /// This class uses <see cref="EditorGUI.PropertyField(Rect, SerializedProperty, GUIContent)"/> to draw

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: PropertyAttributeSetter
   m_EditorClassIdentifier: 
   GeneratedCodeFolderId: EditorPlus.Editor.GeneratedCode
-  CustomDrawerAttributeFileName: CustomDrawerAttributeDeclaration.cs
+  CustomDrawerAttributeFileName: PropertyDrawerAttributeDeclaration.cs
   PropertyAttributeNamespaceBlackList:
   - UnityEngine

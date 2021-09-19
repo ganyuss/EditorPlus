@@ -578,7 +578,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    1: EDITOR_PLUS_CUSTOM_EDITOR
+    1: 
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
