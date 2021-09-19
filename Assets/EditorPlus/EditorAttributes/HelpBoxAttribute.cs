@@ -31,7 +31,7 @@ namespace EditorPlus {
         /// <summary>
         /// The type of the icon to display on the left hand side of the help box.
         /// </summary>
-        public HelpBoxType Type = HelpBoxType.None;
+        public HelpBoxType Type = HelpBoxType.Info;
         /// <summary>
         /// The position of the help box, relative to the property drawer. 
         /// </summary>
