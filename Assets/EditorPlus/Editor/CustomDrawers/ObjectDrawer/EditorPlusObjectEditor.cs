@@ -96,7 +96,7 @@ namespace EditorPlus.Editor {
     /// </li><li>
     /// Otherwise, the field will be displayed using the
     /// <see cref="EditorGUI.PropertyField(Rect, SerializedProperty, GUIContent)"/> method.
-    /// this can lead to an indirect use of the <see cref="CustomUnityDrawer"/> class.
+    /// this can lead to an indirect use of the <see cref="EditorPlusPropertyDrawer"/> class.
     /// </li></ul>
     /// </summary>
     public class SerializedPropertyDrawer {
