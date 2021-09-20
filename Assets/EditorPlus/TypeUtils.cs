@@ -4,27 +4,50 @@ using System.Linq;
 using JetBrains.Annotations;
 
 namespace EditorPlus {
+    
+    /// <summary>
+    /// Helper class to easily fetch types.
+    /// </summary>
     public static class TypeUtils 
     {
+        /// <summary>
+        /// Returns all the types available.
+        /// </summary>
+        /// <returns>All the types.</returns>
         public static IEnumerable<Type> GetAllTypes() {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes());
         }
     
-        public static IEnumerable<Type> GetTypesFromName(string typeName) {
+        /// <summary>
+        /// This methods return a list of types with the given name. There can be
+        /// maximum one type per assembly.
+        /// </summary>
+        /// <param name="typeName">The name of the types to look for.</param>
+        /// <returns>The list of all the types with the given name.</returns>
+        public static Type[] GetTypesFromName(string typeName) {
             List<Type> output = new List<Type>();
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
                 Type type = assembly.GetType(typeName);
                 if (type != null) output.Add(type);
             }
 
-            return output;
+            return output.ToArray();
         }
         
+        /// <summary>
+        /// Returns all the types implementing the interface described by
+        /// the interfaceType type.
+        /// </summary>
+        /// <param name="interfaceType">The type of the interface to search for.</param>
+        /// <returns>All the types implementing the given interface.</returns>
         [NotNull]
         public static Type[] GetAllTypesImplementing(Type interfaceType) {
 
+            if (!interfaceType.IsInterface) {
+                return new Type[0];
+            }
+            
             List<Type> output = new List<Type>();
-            //parentType.gene
             
             foreach (Type type in GetAllTypes()) {
                 if (type.GetInterfaces().Contains(interfaceType)) {
@@ -35,6 +58,13 @@ namespace EditorPlus {
             return output.ToArray();
         }
         
+        /// <summary>
+        /// Returns all the types inheriting from the type described by
+        /// the parentType type. This method does not take the generic
+        /// parameters of classes. 
+        /// </summary>
+        /// <param name="parentType">The type to search the child classes of.</param>
+        /// <returns>All the types inheriting from the given type.</returns>
         [NotNull]
         public static Type[] GetAllTypesInheritingFrom(Type parentType) {
 
