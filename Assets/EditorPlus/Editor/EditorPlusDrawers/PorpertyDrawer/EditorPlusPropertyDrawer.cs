@@ -126,8 +126,8 @@ namespace EditorPlus.Editor {
             float height = GetHeight(property, label);
             Rect propertyRect = new Rect(position) {height = height};
             
-            if (label != null)
-                label.text ??= property.displayName;
+            if (label != null && label.text == null)
+                label.text = property.displayName;
             
             EditorGUI.PropertyField(propertyRect, property, label);
             

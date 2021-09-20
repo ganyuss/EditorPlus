@@ -18,12 +18,11 @@ namespace EditorPlus.Editor {
     /// </summary>
     /// <seealso cref="DecoratorBase&lt;Attr&gt;"/>
     public interface IClassDecorator {
-        public string TargetPropertyPath { set; }
-        public void OnEnable(List<object> targets);
-        public float GetHeight(List<object> targets);
-        public Rect OnInspectorGUIBefore(Rect rect, List<object> targets);
-        public Rect OnInspectorGUIAfter(Rect rect, List<object> targets);
-
+        string TargetPropertyPath { set; }
+        void OnEnable(List<object> targets);
+        float GetHeight(List<object> targets);
+        Rect OnInspectorGUIBefore(Rect rect, List<object> targets);
+        Rect OnInspectorGUIAfter(Rect rect, List<object> targets);
     }
     
 #if !EDITOR_PLUS_DISABLE_EDITOR

@@ -138,8 +138,8 @@ namespace EditorPlus.Editor {
         }
 
         protected override string GetErrorText(SerializedProperty property, GUIContent label) {
-            return $"The {nameof(MinMaxSlider)} is set on the {property.name} property of type {property.type}. " +
-                $"{nameof(MinMaxSlider)} only works on {nameof(MinMaxInt)} or {nameof(MinMaxFloat)} properties.";
+            return $"The MinMaxSlider is set on the {property.name} property of type {property.type}. " +
+                $"MinMaxSlider only works on {nameof(MinMaxInt)} or {nameof(MinMaxFloat)} properties.";
         }
     }
 }
