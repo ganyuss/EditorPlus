@@ -45,14 +45,14 @@ namespace EditorPlus.Editor {
             float maxValue;
             bool sliderDisabled = minProperty.hasMultipleDifferentValues
                                   || maxProperty.hasMultipleDifferentValues;
-
+            bool isInteger = property.type == nameof(MinMaxInt);
 
             if (sliderDisabled) {
                 minValue = float.NegativeInfinity;
                 maxValue = float.PositiveInfinity;
             }
             else {
-                if (property.type == nameof(MinMaxInt)) {
+                if (isInteger) {
                     minValue = minProperty.intValue;
                     maxValue = maxProperty.intValue;
                 }
@@ -83,9 +83,18 @@ namespace EditorPlus.Editor {
             Rect secondFieldPosition = new Rect(firstFieldPosition);
             secondFieldPosition.xMin += rightFieldSize + rightMargin;
             secondFieldPosition.width = rightFieldSize;
-            
-            EditorGUI.DelayedIntField(firstFieldPosition, minProperty, GUIContent.none);
-            EditorGUI.DelayedIntField(secondFieldPosition, maxProperty, GUIContent.none);
+
+            int previousIndent = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
+            if (isInteger) {
+                EditorGUI.DelayedIntField(firstFieldPosition, minProperty, GUIContent.none);
+                EditorGUI.DelayedIntField(secondFieldPosition, maxProperty, GUIContent.none);
+            }
+            else {
+                EditorGUI.DelayedFloatField(firstFieldPosition, minProperty, GUIContent.none);
+                EditorGUI.DelayedFloatField(secondFieldPosition, maxProperty, GUIContent.none);
+            }
+            EditorGUI.indentLevel = previousIndent;
 
             if (EditorGUI.EndChangeCheck()) {
 

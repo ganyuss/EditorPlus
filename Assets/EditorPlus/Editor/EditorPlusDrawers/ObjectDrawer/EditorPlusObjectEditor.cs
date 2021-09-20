@@ -106,6 +106,7 @@ namespace EditorPlus.Editor {
         private readonly float FieldMargin = EditorGUIUtility.standardVerticalSpacing;
         private ListDrawer ListDrawerInstance;
         private List<IClassDecorator> _classDecoratorList;
+        private List<Decorator> _regularDecoratorList;
         private List<object> _targetList;
         
         public SerializedPropertyDrawer(SerializedProperty property, SerializedPropertyDrawerList drawerList) {
@@ -129,6 +130,16 @@ namespace EditorPlus.Editor {
             }
             
             return _classDecoratorList;
+        }
+        
+        private List<Decorator> GetRegularDecorators() {
+            if (_regularDecoratorList != null)
+                return _regularDecoratorList;
+
+            EditorUtils.GetMemberInfo(Property, out _, out var memberInfo);
+            _regularDecoratorList = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(memberInfo);
+            
+            return _regularDecoratorList;
         }
 
         private List<object> GetTargets() {
@@ -160,7 +171,7 @@ namespace EditorPlus.Editor {
         }
 
         public float GetPropertyHeight(bool showLabel = true) {
-            float fieldHeight;
+            float fieldHeight = 0;
             if (IsPropertyToDrawAsDefault(Property)) {
                 fieldHeight = EditorGUI.GetPropertyHeight(Property,
                     showLabel ? new GUIContent(Property.displayName) : GUIContent.none);
@@ -169,20 +180,28 @@ namespace EditorPlus.Editor {
                 fieldHeight = GetListDrawer(Property).GetHeight(Property);
             }
             else {
-                fieldHeight = showLabel ? EditorGUIUtility.singleLineHeight : 0;
-
-                SerializedProperty nextProperty = Property.Copy();
-                int startDepth = Property.depth;
-                if (nextProperty.NextVisible(true)) {
-                    do {
-                        fieldHeight += DrawerList.GetDrawer(nextProperty).GetPropertyHeight();
-                    } while (nextProperty.NextVisible(false) && startDepth < nextProperty.depth);
-                }
                 
-                List<IClassDecorator> decorators = GetClassDecorators();
-                List<object> targets = GetTargets();
+                List<Decorator> regularDecorators = GetRegularDecorators();
+                if (regularDecorators.All(d => d.ShowProperty(Property))) {
+                    
+                    fieldHeight = showLabel ? EditorGUIUtility.singleLineHeight : 0;
 
-                fieldHeight += decorators.Select(d => d.GetHeight(targets)).Sum();
+                    if (Property.isExpanded) {
+                        SerializedProperty nextProperty = Property.Copy();
+                        int startDepth = Property.depth;
+                        if (nextProperty.NextVisible(true)) {
+                            do {
+                                fieldHeight += DrawerList.GetDrawer(nextProperty).GetPropertyHeight();
+                            } while (nextProperty.NextVisible(false) && startDepth < nextProperty.depth);
+                        }
+
+                        List<IClassDecorator> decorators = GetClassDecorators();
+                        List<object> targets = GetTargets();
+
+                        fieldHeight += decorators.Select(d => d.GetHeight(targets)).Sum();
+                        fieldHeight += regularDecorators.Select(d => d.GetHeight(Property)).Sum();
+                    }
+                }
             }
 
             return fieldHeight > 0 ? fieldHeight + 2 * FieldMargin : 0;
@@ -206,52 +225,65 @@ namespace EditorPlus.Editor {
             }
             // Custom class without custom attributes, we can draw it as Unity would do it.
             else {
-                if (showLabel) {
-                    Rect labelRect = new Rect(rect) {height = EditorGUIUtility.singleLineHeight};
-                    Property.isExpanded = EditorGUI.Foldout(labelRect, Property.isExpanded, Property.displayName);
+                List<Decorator> regularDecorators = GetRegularDecorators();
 
-                    rect.ToBottomOf(labelRect);
-                    EditorGUI.indentLevel += 1;
-                }
-                else {
-                    Property.isExpanded = true;
-                }
+                if (regularDecorators.All(d => d.ShowProperty(Property))) {
+                    if (showLabel) {
+                        Rect labelRect = new Rect(rect) {height = EditorGUIUtility.singleLineHeight};
+                        Property.isExpanded = EditorGUI.Foldout(labelRect, Property.isExpanded, Property.displayName, true);
 
-                if (Property.isExpanded) {
-                    
-                    List<IClassDecorator> decorators = GetClassDecorators();
-                    List<object> targets = GetTargets();
-                    
-                    foreach (var decorator in decorators) {
-                        rect = decorator.OnInspectorGUIBefore(rect, targets);
+                        rect.ToBottomOf(labelRect);
+                        EditorGUI.indentLevel += 1;
                     }
-                    
-                    SerializedProperty nextProperty = Property.Copy();
-                    int startDepth = Property.depth;
-                    if (nextProperty.NextVisible(true)) {
-                        do {
-                            
-                            SerializedPropertyDrawer drawer = DrawerList.GetDrawer(nextProperty);
-                            Rect propertyRect = new Rect(rect) { height = drawer.GetPropertyHeight() }; 
-                            drawer.Draw(propertyRect);
-                            rect.ToBottomOf(propertyRect);
-                        } while (nextProperty.NextVisible(false) && startDepth < nextProperty.depth);
+                    else {
+                        Property.isExpanded = true;
                     }
-                    
-                    foreach (var decorator in decorators) {
-                        rect = decorator.OnInspectorGUIAfter(rect, targets);
-                    }
-                }
 
-                if (showLabel) {
-                    EditorGUI.indentLevel -= 1;
+                    if (Property.isExpanded) {
+                        
+                        List<IClassDecorator> classDecorators = GetClassDecorators();
+                        List<object> targets = GetTargets();
+                        
+                        foreach (var decorator in classDecorators) {
+                            rect = decorator.OnInspectorGUIBefore(rect, targets);
+                        }
+                        
+                        foreach (var decorator in regularDecorators) {
+                            rect = decorator.OnBeforeGUI(rect, Property);
+                        }
+                        
+                        SerializedProperty nextProperty = Property.Copy();
+                        int startDepth = Property.depth;
+                        if (nextProperty.NextVisible(true)) {
+                            do {
+                                
+                                SerializedPropertyDrawer drawer = DrawerList.GetDrawer(nextProperty);
+                                Rect propertyRect = new Rect(rect) { height = drawer.GetPropertyHeight() }; 
+                                drawer.Draw(propertyRect);
+                                rect.ToBottomOf(propertyRect);
+                            } while (nextProperty.NextVisible(false) && startDepth < nextProperty.depth);
+                        }
+                        
+                        foreach (var decorator in regularDecorators) {
+                            rect = decorator.OnAfterGUI(rect, Property);
+                        }
+                        
+                        foreach (var decorator in classDecorators) {
+                            rect = decorator.OnInspectorGUIAfter(rect, targets);
+                        }
+                    }
+
+                    if (showLabel) {
+                        EditorGUI.indentLevel -= 1;
+                    }
                 }
             }
         }
 
         private bool IsPropertyToDrawAsDefault(SerializedProperty property) =>
             property.propertyType != SerializedPropertyType.Generic 
-            || !property.isArray && HasCustomAttributes(property);
+            || !property.isArray && HasCustomAttributes(property)
+            || property.propertyPath == "m_ExternalObjects";
 
         private bool HasCustomAttributes(SerializedProperty property) {
             EditorUtils.GetMemberInfo(property, out _, out var targetMemberInfo);
