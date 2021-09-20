@@ -14,7 +14,7 @@
 
 ## Overview
 
-Editor Plus is a Unity plugin to add functionnalities to the the Unity editor.
+Editor Plus is a Unity plugin to add functionalities to the the Unity editor.
 
 The goal is to facilitate work with project assets, and improve the overall editor experience. It has some new editor features right out of the box, but also let you write your own, in a more convenient fashion than what Unity does.
 
@@ -31,7 +31,7 @@ Editor Plus comes with some new editor attributes to decorate your fields with:
 * **DisableInEditMode** will make the element read only in the inspector if the editor is *not* playing the game.
 * **DisableInPlayMode** will make the element read only in the inspector if the editor is playing the game.
 * **Dropdown** lets you give a list of values to put in a dropdown in the editor, instead of the regular field editor. You can also give a method name to have the dropdown value change dynamically.
-* **HelpBox** puts a help box with the given text above or below the marked field, to give additionnal information.
+* **HelpBox** puts a help box with the given text above or below the marked field, to give additional information.
 * **HideIf** will hide the marked element in the inspector if the member (field, property or method) with the given name returns true.
 * **HideInEditMode** will hide the element in the inspector if the editor is *not* playing the game.
 * **HideInPlayMode** will hide the element in the inspector if the editor is playing the game.
@@ -43,7 +43,7 @@ Attributes descriptions referring to \"elements\" will work on both fields and b
 
 ### Improved list editor
 
-Editor Plus improves the list editor, by making them foldable, and improving readablility. One can also customize the way the list editor work by using the `BetterList` attribute (see above).
+Editor Plus improves the list editor, by improving readability. One can also customize the way the list editor work by using the `BetterList` attribute (see above).
 
 ![Example of the difference between the regular list an the EditorPlus list](ListDemo.png)
 
