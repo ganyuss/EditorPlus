@@ -11,6 +11,7 @@ namespace EditorPlus.Editor {
     /// <br /><br />
     /// This allows for seamless project folder sorting.   
     /// </summary>
+    [CreateAssetMenu(menuName = "Editor Plus/Folder Locator")]
     public class FolderLocator : ScriptableObject {
 
         public string FolderId;
