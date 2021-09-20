@@ -2,16 +2,6 @@
 
 # Editor Plus
 
-* [Overview](#Overview)
-* [Features](#Features)
-    * [New editor attributes](#New-editor-attributes)
-    * [Improved list editor](#Improved-list-editor)
-    * [ScriptableObject creation facilitated](#ScriptableObject-creation-facilitated)
-    * [Folder targeting made more robust](#Folder-targeting-made-more-robust)
-    * [A more easily customizable editor](#A-more-easily-customizable-editor)
-    * [Some helper functions](#Some-helper-functions)
-* [Known issues](#Known-issues)
-
 ## Overview
 
 Editor Plus is a Unity plugin to add functionalities to the the Unity editor.
@@ -68,6 +58,24 @@ For more information about how to implement these, see the in code documentation
 ### Some helper functions
 
 Editor Plus provides 2 classes with helper methods: `AssetDatabaseUtils` and `TypeUtils`. The first one provides helper methods to manage assets easily, and the other one methods to get lists of types.
+
+## Compatibility
+
+### Custom Editor
+
+This plugin adds one custom editor to the Unity project. While it should not cause any issue, if it clashes with another editor (like for example the one from another plugin) and you are not happy with the result, you can disable it by defining the `EDITOR_PLUS_DISABLE_EDITOR` scripting symbol. 
+
+If you do so, a couple of functionalities will be taken out:
+* The `IClassDecorator` feature will no longer work. That means that the `Button` and `OnInspectorGUI` attributes wont either.
+* Lists will not be drawn by Editor Plus anymore, meaning that the `BetterList` attribute will no longer work as well.
+
+### Property Drawers
+
+Editor Plus also adds a `PropertyDrawer` for all its attributes, meaning that it might not work well with some other attributes with their custom property drawers. There is no easy solution to that problem, apart from rewriting their property drawers as Editor Plus' Drawers. 
+
+If one ever try to do so, they might want to add the concerned attribute's namespace to the `PropertyAttributeSetter` blacklist so that if they appear on a field without any Editor Plus attribute, the original property drawer will be called. 
+
+There should not be any problem with `DecoratorDrawer`s, but if there are, a solution would be to rewrite them as `DecoratorDrawer`s just like with property drawers.
 
 ## Known issues
 
