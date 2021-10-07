@@ -19,7 +19,7 @@ MonoBehaviour:
   TextArea: b
   Multiline: b
   Comparison: b
-  Range: 36.9
+  Range: 51.5
   PlayModeOnly: 0
   field: test
   Disabled: 0
@@ -31,22 +31,27 @@ MonoBehaviour:
   EEEEEEEEEE:
     W:
     - VSTR: 
-      wow: 0
+      wow: 156485
       disabled: 0
-      values: 
-    - VSTR: zzzz
-      wow: 0
-      disabled: 1
       values: 
     - VSTR: 
       wow: 0
       disabled: 1
       values: 0000000000000000
+    - VSTR: zzzz
+      wow: 0
+      disabled: 1
+      values: 
     str: 
     str2: 
     zzzz: 0
   ZZZZzz: slt
+  ZZZZzzz: 
+  ZZZZzzzz: 
   DropdownTest: test2
-  DropdownTest2: 2
-  TagExample: Untagged
+  DropdownTest2: 1
+  TagExample: Player
   Digit: 8
+  CustomEditorsTest:
+    m_PersistentCalls:
+      m_Calls: []

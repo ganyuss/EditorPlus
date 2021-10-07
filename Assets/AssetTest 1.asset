@@ -15,7 +15,7 @@ MonoBehaviour:
   Test: 0
   MinMax:
     Min: 1
-    Max: 12
+    Max: 14
   TextArea: 
   Multiline: 
   Comparison: 
@@ -24,9 +24,9 @@ MonoBehaviour:
   field: 
   Disabled: 0
   ListDrawer:
+  - 4
+  - 4
   - 7
-  - 4
-  - 4
   - 4
   EEEEEEEEEE:
     W:
@@ -42,7 +42,12 @@ MonoBehaviour:
     str2: 
     zzzz: 0
   ZZZZzz: 
+  ZZZZzzz: 
+  ZZZZzzzz: 
   DropdownTest: test1
   DropdownTest2: 3
   TagExample: Untagged
   Digit: 0
+  CustomEditorsTest:
+    m_PersistentCalls:
+      m_Calls: []

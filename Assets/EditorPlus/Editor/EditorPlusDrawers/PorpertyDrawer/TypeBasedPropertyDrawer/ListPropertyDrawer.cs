@@ -17,11 +17,15 @@ namespace EditorPlus.Editor {
     /// in the drawing.
     /// </summary>
     public class ListPropertyDrawer {
+
+        private readonly float FieldMargin = EditorGUIUtility.standardVerticalSpacing;
         
         private ReorderableList InnerList;
         private SerializedProperty CurrentProperty;
-        private SerializedPropertyDrawerList DrawerList;
 
+        private bool? EditingMultipleValue;
+        private int? ListCount;
+        
         private bool ShowFocus = true;
         private bool AlwaysExpanded = false;
         
@@ -34,12 +38,21 @@ namespace EditorPlus.Editor {
                                             "is incorrect. The name must point to a method with only one argument, either " +
                                             "the index of the element to remove or the element itself.";
 
-        public ListPropertyDrawer(SerializedProperty property, SerializedPropertyDrawerList drawerList) {
+        private void UpdateProperty(SerializedProperty property) {
             CurrentProperty = property.Copy();
-            DrawerList = drawerList;
 
-            
-            if (property.hasMultipleDifferentValues) {
+            if (InnerList is null || !EditingMultipleValue.HasValue || !ListCount.HasValue ||
+                EditingMultipleValue.Value != CurrentProperty.hasMultipleDifferentValues
+                || ListCount.Value != CurrentProperty.arraySize) {
+                
+                EditingMultipleValue = CurrentProperty.hasMultipleDifferentValues;
+                ListCount = CurrentProperty.arraySize;
+                UpdateInnerList();
+            }
+        }
+
+        private void UpdateInnerList() {
+            if (CurrentProperty.hasMultipleDifferentValues) {
                 InnerList = new ReorderableList(new List<object>(), typeof(object)) {
                     onCanAddCallback = list => false,
                     onCanRemoveCallback = list => false,
@@ -65,7 +78,7 @@ namespace EditorPlus.Editor {
                 drawElementBackgroundCallback = DrawElementBackground,
             };
             
-            EditorUtils.GetMemberInfo(property, out _, out var listMemberInfo);
+            EditorUtils.GetMemberInfo(CurrentProperty, out _, out var listMemberInfo);
             BetterListAttribute attribute = listMemberInfo.GetCustomAttribute<BetterListAttribute>();
             if (attribute != null)
                 ApplyAttribute(attribute);
@@ -151,6 +164,8 @@ namespace EditorPlus.Editor {
 
         public float GetHeight(SerializedProperty property, GUIContent label) {
 
+            UpdateProperty(property);
+            
             if (property.hasMultipleDifferentValues) {
                 return InnerList.GetHeight();
             }
@@ -170,6 +185,8 @@ namespace EditorPlus.Editor {
         }
 
         public Rect OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+            
+            UpdateProperty(property);
 
             Rect listRect = new Rect(position) {height = GetHeight(property, label)};
             
@@ -221,12 +238,13 @@ namespace EditorPlus.Editor {
         }
         
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused) {
-            SerializedProperty property = GetPropertyAt(index);
-            DrawerList.GetDrawer(property).Draw(rect, false);
+            rect.height -= FieldMargin*2;
+            rect.y += FieldMargin;
+            EditorGUI.PropertyField(rect, GetPropertyAt(index), GUIContent.none);
         }
         
         private float GetElementHeight(int index) {
-            return DrawerList.GetDrawer(GetPropertyAt(index)).GetPropertyHeight(false);
+            return EditorGUI.GetPropertyHeight(GetPropertyAt(index)) + 2*FieldMargin;
         }
 
         private SerializedProperty GetPropertyAt(int index) {

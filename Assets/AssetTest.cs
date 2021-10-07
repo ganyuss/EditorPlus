@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using EditorPlus;
 using UnityEngine;
+using UnityEngine.Events;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -39,6 +40,8 @@ public class AssetTest : ScriptableObject {
     public E EEEEEEEEEE;
 
     public string ZZZZzz;
+    public string ZZZZzzz;
+    public string ZZZZzzzz;
 
     [Dropdown(new[] { "test1", "test2" })]
     public string DropdownTest;
@@ -53,6 +56,8 @@ public class AssetTest : ScriptableObject {
     
     [Dropdown(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 })]
     public int Digit;
+    
+    public UnityEvent CustomEditorsTest;
 
     //[CustomSpace(10 ,10)]
     [Button("test")]
