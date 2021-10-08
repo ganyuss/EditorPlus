@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using EditorPlus.Editor;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -30,7 +29,6 @@ namespace EditorPlus.Editor {
     /// This class is the main object editor for the plugin. It draws
     /// everything using the <see cref="SerializedPropertyDrawer" />.
     /// </summary>
-    /// <seealso cref="SerializedPropertyDrawerList"/>
     [CustomEditor(typeof(Object), true)]
     [CanEditMultipleObjects]
     public class EditorPlusObjectEditor : UnityEditor.Editor {
@@ -49,7 +47,16 @@ namespace EditorPlus.Editor {
             serializedObject.ApplyModifiedProperties();
         }
     }
-
+    
+    /// <summary>
+    /// This class is the main property drawer for the plugin. If the property is
+    /// of <see cref="SerializedPropertyType.Generic">generic</see> type, it draws
+    /// everything using the <see cref="SerializedPropertyDrawer"/>. Otherwise it draws
+    /// the field normally using the <see cref="EditorGUI.PropertyField(Rect, SerializedProperty, GUIContent)"/> method.
+    /// <br /><br />
+    /// This allows for generic fields to be displayed with class decorators,
+    /// and to be drawn with the better Editor+ lists. 
+    /// </summary>
     [CustomPropertyDrawer(typeof(object), true)]
     public class EditorPlusObjectPropertyDrawer : PropertyDrawer {
         
@@ -79,21 +86,10 @@ namespace EditorPlus.Editor {
     
     
     /// <summary>
-    /// This class is responsible for drawing a <see cref="SerializedProperty"/>.
-    /// There are 3 different cases:
-    /// <ul><li>
-    /// The property describes a field that is a generic object, like an object of
-    /// a custom <see cref="SerializableAttribute">serializable</see> class. The drawer will draw
-    /// the foldout, display decoration from <see cref="IClassDecorator"/> classes,
-    /// and display each sub field using other property drawers.
-    /// </li><li>
-    /// The property describes a list. In that case it will use a <see cref="SerializedPropertyDrawer.ListDrawer"/>
-    /// to display it.
-    /// </li><li>
-    /// Otherwise, the field will be displayed using the
-    /// <see cref="EditorGUI.PropertyField(Rect, SerializedProperty, GUIContent)"/> method.
-    /// this can lead to an indirect use of the <see cref="EditorPlusPropertyDrawer"/> class.
-    /// </li></ul>
+    /// This class is responsible for drawing a  generic <see cref="SerializedProperty"/> representing any object.
+    /// It can be an inner generic property or a "root" object like a <see cref="ScriptableObject"/> for example.
+    /// It will handle <see cref="IClassDecorator">class decorators</see>, <see cref="DecoratorBase&lt;Attr&gt;">decorators</see>
+    /// and custom list drawing.
     /// </summary>
     public class SerializedPropertyDrawer {
 
@@ -224,6 +220,11 @@ namespace EditorPlus.Editor {
             List<Decorator> regularDecorators = GetRegularDecorators(property);
             
             if (regularDecorators.All(d => d.ShowProperty(property))) {
+                
+                foreach (var decorator in regularDecorators) {
+                    rect = decorator.OnBeforeGUI(rect, property);
+                }
+
                 if (MustBeShown(label)) {
                     Rect labelRect = new Rect(rect) {height = EditorGUIUtility.singleLineHeight};
                     property.isExpanded = EditorGUI.Foldout(labelRect, property.isExpanded, label, true);
@@ -243,10 +244,6 @@ namespace EditorPlus.Editor {
                         rect = decorator.OnInspectorGUIBefore(rect, targets);
                     }
                     
-                    foreach (var decorator in regularDecorators) {
-                        rect = decorator.OnBeforeGUI(rect, property);
-                    }
-                    
                     SerializedProperty nextProperty = property.Copy();
                     int startDepth = property.depth;
                     if (nextProperty.NextVisible(true)) {
@@ -258,13 +255,13 @@ namespace EditorPlus.Editor {
                         } while (nextProperty.NextVisible(false) && startDepth < nextProperty.depth);
                     }
                     
-                    foreach (var decorator in regularDecorators) {
-                        rect = decorator.OnAfterGUI(rect, property);
-                    }
-                    
                     foreach (var decorator in classDecorators) {
                         rect = decorator.OnInspectorGUIAfter(rect, targets);
                     }
+                }
+                
+                foreach (var decorator in regularDecorators) {
+                    rect = decorator.OnAfterGUI(rect, property);
                 }
 
                 if (MustBeShown(label)) {
