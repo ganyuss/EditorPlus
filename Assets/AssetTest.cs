@@ -93,6 +93,7 @@ public class AssetTest : ScriptableObject {
         public string str;
         [ShowIf(nameof(zzzz))]
         public string str2;
+        [Indent(2)]
         public bool zzzz;
 
         [Button("WWWWWWWWWWWWWWWWWWWW")]

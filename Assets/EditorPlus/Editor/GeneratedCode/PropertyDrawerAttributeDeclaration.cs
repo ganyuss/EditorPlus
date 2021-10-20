@@ -11,6 +11,7 @@ namespace EditorPlus.Editor {
 	[CustomPropertyDrawer(typeof(EditorPlus.HelpBoxAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.HideIfAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.ShowIfAttribute))]
+	[CustomPropertyDrawer(typeof(EditorPlus.IndentAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.OnValueChangedAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.HideInPlayModeAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.DisableInPlayModeAttribute))]
