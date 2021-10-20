@@ -56,6 +56,13 @@ public class AssetTest : ScriptableObject {
     
     [Dropdown(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 })]
     public int Digit;
+
+    [OnValueChanged(nameof(PrintMonitoredValue))]
+    public int ThisValueIsMonitored;
+
+    private void PrintMonitoredValue() {
+        Debug.Log(ThisValueIsMonitored);
+    }
     
     public UnityEvent CustomEditorsTest;
 
