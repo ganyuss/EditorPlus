@@ -87,7 +87,7 @@ namespace EditorPlus.Editor {
     /// </summary>
     /// <typeparam name="Attr">The attribute used to signal the decorator to draw around</typeparam>
     public abstract class DecoratorBase<Attr> : Decorator where Attr : PropertyAttribute {
-        public override Type AttributeType => typeof(Attr);
+        public sealed override Type AttributeType => typeof(Attr);
         public Attr CurrentAttribute;
 
 
