@@ -19,8 +19,9 @@ namespace EditorPlus.Editor {
         /// <summary>
         /// This enum allows the decorator to tell when it wants to be drawn related to other decorators.<br /><br />
         /// Note that decorators are drawn in a LIFO fashion: the first decorator called in the
-        /// <see cref="OnBeforeGUI">OnBeforeGUI</see> phase will be the last in the
-        /// <see cref="OnAfterGUI">OnAfterGUI</see> phase.
+        /// <see cref="OnBeforeGUI(Rect, List&lt;object&gt;, string,SerializedProperty)">OnBeforeGUI</see>
+        /// phase will be the last in the
+        /// <see cref="OnAfterGUI(Rect, List&lt;object&gt;, string,SerializedProperty)">OnAfterGUI</see> phase.
         /// </summary>
         public enum OrderValue : int {
             /// <summary>
@@ -91,7 +92,7 @@ namespace EditorPlus.Editor {
         public Attr CurrentAttribute;
 
 
-        public override void SetAttribute(Attribute attribute) {
+        public sealed override void SetAttribute(Attribute attribute) {
             if (attribute.GetType() == AttributeType)
                 CurrentAttribute = (Attr) attribute;
         }
