@@ -292,7 +292,6 @@ namespace EditorPlus.Editor {
             private ListPropertyDrawer ActualDrawer;
             
             public ListDrawer(SerializedProperty property) {
-                Debug.Log(property.propertyPath);
                 EditorUtils.GetMemberInfo(property, out _, out var targetMemberInfo);
                 Decorators = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(targetMemberInfo);
                 DecoratorsReversed = ((IEnumerable<Decorator>)Decorators).Reverse().ToList();

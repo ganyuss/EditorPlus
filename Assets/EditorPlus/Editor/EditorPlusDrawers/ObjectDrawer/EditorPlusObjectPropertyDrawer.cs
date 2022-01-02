@@ -26,7 +26,6 @@ namespace EditorPlus.Editor {
                 return;
             }
 
-            Debug.Log(property.propertyPath);
             Drawer.Draw(position, property, label);
         }
 
