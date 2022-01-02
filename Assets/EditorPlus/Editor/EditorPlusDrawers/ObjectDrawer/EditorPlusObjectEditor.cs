@@ -181,6 +181,8 @@ namespace EditorPlus.Editor {
                     int startDepth = property.depth;
                     if (nextProperty.NextVisible(true)) {
                         do {
+                            if (ShouldSkipProperty(nextProperty))
+                                continue;
                             fieldHeight += GetInnerPropertyHeight(nextProperty);
                         } while (nextProperty.NextVisible(false) && startDepth < nextProperty.depth);
                     }
@@ -251,6 +253,8 @@ namespace EditorPlus.Editor {
                     int startDepth = property.depth;
                     if (nextProperty.NextVisible(true)) {
                         do {
+                            if (ShouldSkipProperty(nextProperty))
+                                continue;
                             
                             Rect propertyRect = new Rect(rect) { height = GetInnerPropertyHeight(nextProperty) }; 
                             DrawInnerProperty(propertyRect, nextProperty);
@@ -291,6 +295,11 @@ namespace EditorPlus.Editor {
             }
         }
 
+
+        private static bool ShouldSkipProperty(SerializedProperty property) {
+            return property.propertyPath == "m_ExternalObjects";
+        }
+        
         private static bool MustBeShown(GUIContent label) => label != null && label != GUIContent.none;
 
         private static bool IsPropertyArray(SerializedProperty property) 
