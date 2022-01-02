@@ -94,10 +94,11 @@ namespace EditorPlus.Editor {
     public class SerializedPropertyDrawer {
 
         private readonly float FieldMargin = EditorGUIUtility.standardVerticalSpacing;
-        private ListDrawer ListDrawerInstance;
         private List<IClassDecorator> _classDecoratorList;
         private List<Decorator> _regularDecoratorList;
         private List<object> _targetList;
+        
+        private Dictionary<string, ListDrawer> InnerListDrawers = new Dictionary<string, ListDrawer>();
 
         private List<IClassDecorator> GetClassDecorators(SerializedProperty property) {
             if (_classDecoratorList != null)
@@ -153,11 +154,13 @@ namespace EditorPlus.Editor {
         }
 
         private ListDrawer GetListDrawer(SerializedProperty property) {
-            if (ListDrawerInstance is null) {
-                ListDrawerInstance = new ListDrawer(property);
+            if (InnerListDrawers.TryGetValue(property.propertyPath, out var listDrawer)) {
+                return listDrawer;
             }
 
-            return ListDrawerInstance;
+            ListDrawer newListDrawer = new ListDrawer(property);
+            InnerListDrawers.Add(property.propertyPath, newListDrawer);
+            return newListDrawer;
         }
 
         
