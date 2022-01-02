@@ -45,7 +45,7 @@ namespace EditorPlus.Editor {
             foreach (var attributeType in attributeTypes) {
                 fileContents.Append($"\t[CustomPropertyDrawer(typeof({attributeType.FullName}))]\n");
             }
-            fileContents.Append($"\tpublic partial class {nameof(EditorPlusObjectPropertyDrawer)} {{ }}\n");
+            fileContents.Append($"\tpublic partial class {nameof(EditorPlusPropertyDrawer)} {{ }}\n");
             fileContents.Append("}\n");
             
             File.WriteAllText(drawerAttributeFilePath, fileContents.ToString());
