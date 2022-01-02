@@ -47,41 +47,6 @@ namespace EditorPlus.Editor {
             serializedObject.ApplyModifiedProperties();
         }
     }
-    
-    /// <summary>
-    /// This class is the main property drawer for the plugin. If the property is
-    /// of <see cref="SerializedPropertyType.Generic">generic</see> type, it draws
-    /// everything using the <see cref="SerializedPropertyDrawer"/>. Otherwise it draws
-    /// the field normally using the <see cref="EditorGUI.PropertyField(Rect, SerializedProperty, GUIContent)"/> method.
-    /// <br /><br />
-    /// This allows for generic fields to be displayed with class decorators,
-    /// and to be drawn with the better Editor+ lists. 
-    /// </summary>
-    [CustomPropertyDrawer(typeof(object), true)]
-    public class EditorPlusObjectPropertyDrawer : PropertyDrawer {
-        
-        private SerializedPropertyDrawer Drawer = new SerializedPropertyDrawer();
-        
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-            if (property.propertyType != SerializedPropertyType.Generic) {
-                EditorGUI.PropertyField(position, property, label);
-                return;
-            }
-            
-            Drawer ??= new SerializedPropertyDrawer();
-            Drawer.Draw(position, property, label);
-        }
-
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-            if (property.propertyType != SerializedPropertyType.Generic) {
-                return EditorGUI.GetPropertyHeight(property, label);
-            }
-            
-            Drawer ??= new SerializedPropertyDrawer();
-            return Drawer.GetPropertyHeight(property, label);
-        }
-    }
-
 #endif
     
     
@@ -289,7 +254,7 @@ namespace EditorPlus.Editor {
             else {
                 if (property.name == "m_Script")
                     GUI.enabled = false;
-                EditorGUI.PropertyField(rect, property, showLabel ? new GUIContent(property.displayName) : GUIContent.none);
+                EditorGUI.PropertyField(rect, property, showLabel ? new GUIContent(property.displayName) : GUIContent.none, true);
                 if (property.name == "m_Script")
                     GUI.enabled = true;
             }
@@ -327,6 +292,7 @@ namespace EditorPlus.Editor {
             private ListPropertyDrawer ActualDrawer;
             
             public ListDrawer(SerializedProperty property) {
+                Debug.Log(property.propertyPath);
                 EditorUtils.GetMemberInfo(property, out _, out var targetMemberInfo);
                 Decorators = DecoratorAndDrawerDatabase.GetAllDecoratorsFor(targetMemberInfo);
                 DecoratorsReversed = ((IEnumerable<Decorator>)Decorators).Reverse().ToList();

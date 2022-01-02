@@ -13,9 +13,8 @@ namespace EditorPlus.Editor {
 	[CustomPropertyDrawer(typeof(EditorPlus.ShowIfAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.HideInPlayModeAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.DisableInPlayModeAttribute))]
-	[CustomPropertyDrawer(typeof(EditorPlus.Editor.DefaultPropertyAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.DropdownAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.MinMaxSliderAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.TagAttribute))]
-	public partial class EditorPlusPropertyDrawer { }
+	public partial class EditorPlusObjectPropertyDrawer { }
 }

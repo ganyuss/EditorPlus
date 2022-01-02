@@ -67,7 +67,7 @@ This plugin adds one custom editor to the Unity project. While it should not cau
 
 If you do so, a couple of functionalities will be taken out:
 * The `IClassDecorator` feature will no longer work. That means that the `Button` and `OnInspectorGUI` attributes wont either.
-* Lists will not be drawn by Editor Plus anymore, meaning that the `BetterList` attribute will no longer work as well.
+* Lists will not be drawn by Editor Plus anymore, unless using the `BetterList` attribute.
 
 ### Property Drawers
 
