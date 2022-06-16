@@ -225,16 +225,19 @@ namespace EditorPlus.Editor {
         }
 
         private void DrawListHeader(Rect headerRect) {
-            const float indentSize = 15;
             const float arrowWidth = 12;
-            float displacement = EditorGUI.indentLevel * indentSize - (AlwaysExpanded ? 0 : arrowWidth);
+            float displacement = (AlwaysExpanded ? 0 : arrowWidth);
             
-            headerRect.x -= displacement;
-            headerRect.width += displacement;
+            headerRect.x += displacement;
+            headerRect.width -= displacement;
+
+            int indentLevel = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
             if (! AlwaysExpanded)
                 InnerList.serializedProperty.isExpanded = EditorGUI.Foldout(headerRect, InnerList.serializedProperty.isExpanded, CurrentProperty.displayName, true);
             else 
                 EditorGUI.LabelField(headerRect, CurrentProperty.displayName);
+            EditorGUI.indentLevel = indentLevel;
         }
         
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused) {
