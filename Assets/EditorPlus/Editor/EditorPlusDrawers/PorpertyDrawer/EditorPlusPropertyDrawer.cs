@@ -115,10 +115,14 @@ namespace EditorPlus.Editor {
     /// This class uses <see cref="EditorGUI.PropertyField(Rect, SerializedProperty, GUIContent)"/> to draw
     /// the field. 
     /// </summary>
-    public class DefaultDrawer : AttributeDrawerBase<DefaultPropertyAttribute> {
-
+    public class DefaultDrawer : AttributeDrawerBase<DefaultPropertyAttribute>
+    {
+        private readonly SerializedPropertyDrawer Drawer = new SerializedPropertyDrawer();
+        
         public override float GetHeight(SerializedProperty property, GUIContent label) {
-            return EditorGUI.GetPropertyHeight(property, label);
+            return property.propertyType == SerializedPropertyType.Generic ? 
+                Drawer.GetPropertyHeight(property, label) : 
+                EditorGUI.GetPropertyHeight(property, label);
         }
 
         public override Rect OnGUI(Rect position, SerializedProperty property, GUIContent label) {
@@ -129,7 +133,11 @@ namespace EditorPlus.Editor {
             if (label != null && label.text == null)
                 label.text = property.displayName;
 
-            EditorGUI.PropertyField(propertyRect, property, label);
+            //EditorGUI.DrawRect(propertyRect, Color.red);
+            if (property.propertyType == SerializedPropertyType.Generic)
+                Drawer.Draw(propertyRect, property, label);
+            else
+                EditorGUI.PropertyField(propertyRect, property, label);
 
             position.ToBottomOf(propertyRect);
             return position;
