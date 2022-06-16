@@ -39,6 +39,12 @@ Editor Plus improves the list editor, by improving readability. One can also cus
 
 ![Example of the difference between the regular list an the EditorPlus list](Assets/Readmes/ListDemo.png)
 
+### Static UnityEvent system
+
+Were you ever blocked when using UnityEvents because the methods you wanted to target were not accessible?
+Well Static UnityEvents are here to fix that. With the `StaticUnityEventComponent` and `StaticUnityEventInvoker`,
+you can now create UnityEvents that can be triggered from anywhere in your scene, and can target anything, anywhere.
+
 ### ScriptableObject creation facilitated
 
 Editor Plus adds a right click menu option to scripts assets to directly create a `ScriptableObject`asset based on the target script file. This allows for quick asset creation without using the `CreateAssetMenu` and cluttering the \"Create\" sub-menu.
