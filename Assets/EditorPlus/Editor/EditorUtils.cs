@@ -220,7 +220,10 @@ namespace EditorPlus.Editor {
                     memberPath.RemoveAt(0);
                 }
                 else {
-                    targetMember = (nextObject ?? targetObject).GetType().GetMember(memberPath[0], BindingFlags).First();
+                    targetMember = (nextObject ?? targetObject).GetType().GetMember(memberPath[0], BindingFlags).FirstOrDefault();
+                    if (targetMember == null)
+                        return;
+
                     memberPath.RemoveAt(0);
 
                     if (nextObject != null) {
