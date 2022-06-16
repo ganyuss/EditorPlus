@@ -19,7 +19,7 @@ namespace EditorPlus.Editor {
 #if !EDITOR_PLUS_DISABLE_EDITOR
     [CustomPropertyDrawer(typeof(object), true)]
 #endif
-    public partial class EditorPlusObjectPropertyDrawer : PropertyDrawer {
+    public partial class EditorPlusObjectPropertyDrawer : UnityEditor.PropertyDrawer {
             
         private readonly SerializedPropertyDrawer Drawer = new SerializedPropertyDrawer();
             

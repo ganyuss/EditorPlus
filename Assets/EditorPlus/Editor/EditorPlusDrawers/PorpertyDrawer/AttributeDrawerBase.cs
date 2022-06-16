@@ -48,7 +48,7 @@ namespace EditorPlus.Editor {
     
     /// <summary>
     /// Override this class to create a custom drawer associated to an attribute.
-    /// Decorators are objects used to draw a field editor.
+    /// Drawers are objects used to draw a field editor.
     /// </summary>
     /// <typeparam name="Attr">The attribute used to signal on what field to draw.</typeparam>
     /// <seealso cref="PropertySpecificDrawerBase{Attr}"/>
@@ -56,10 +56,34 @@ namespace EditorPlus.Editor {
         public override Type AttributeType => typeof(Attr);
         public Attr CurrentAttribute;
         
-        
         public override void SetAttribute(Attribute attribute) {
             if (attribute.GetType() == AttributeType)
                 CurrentAttribute = (Attr) attribute;
         }
+    }
+    
+    /// <summary>
+    /// This class is the base class of the <see cref="PropertyDrawerBase{PropertyType}"/> class.
+    /// It is used as an abstraction layer to facilitate its manipulation.<br /><br />
+    /// <b>DO NOT INHERIT FROM THIS CLASS</b>. If you want to create a custom drawer, inherit from
+    /// <c>AttributeDrawerBase&lt;Attr&gt;</c> instead.
+    /// </summary>
+    /// <seealso cref="Drawer"/>
+    public abstract class PropertyDrawer : Drawer
+    {
+        public abstract Type TargetType { get; }
+    }
+    
+    
+    
+    /// <summary>
+    /// Override this class to create a custom drawer associated to a property type.
+    /// Drawers are objects used to draw a field editor.
+    /// </summary>
+    /// <typeparam name="PropertyType">The type of the fields to draw.</typeparam>
+    /// <seealso cref="Drawer"/>
+    public abstract class PropertyDrawerBase<PropertyType> : PropertyDrawer
+    {
+        public override Type TargetType => typeof(PropertyType);
     }
 }

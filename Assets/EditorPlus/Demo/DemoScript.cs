@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -46,6 +47,8 @@ namespace EditorPlus.Demo
         
             [DisableInEditMode]
             public string AndTryPressingPlay;
+
+            public List<string> test;
 
             [Button("Display List Of Subclasses Of Component")]
             private void DisplayListOfSubclassesOfComponent() {

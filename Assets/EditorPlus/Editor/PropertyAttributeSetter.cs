@@ -31,19 +31,19 @@ namespace EditorPlus.Editor {
             string drawerAttributeFilePath = Path.Combine(codeGenerationFolderPath, CustomDrawerAttributeFileName);
 
             Type[] decoratorAttributeTypes = DecoratorAndDrawerDatabase.GetAllDecoratorAttributeTypes();
-            Type[] drawerAttributeTypes = DecoratorAndDrawerDatabase.GetAllDrawerAttributeTypes();
-            List<Type> attributeTypes = new List<Type>();
-            attributeTypes.AddRange(decoratorAttributeTypes);
-            attributeTypes.AddRange(drawerAttributeTypes);
+            Type[] drawerTypes = DecoratorAndDrawerDatabase.GetAllDrawerTypes();
+            List<Type> drawnTypes = new List<Type>();
+            drawnTypes.AddRange(decoratorAttributeTypes);
+            drawnTypes.AddRange(drawerTypes);
 
-            attributeTypes.RemoveAll(t => PropertyAttributeNamespaceBlackList.Contains(t.Namespace));
+            drawnTypes.RemoveAll(t => PropertyAttributeNamespaceBlackList.Contains(t.Namespace));
             
             StringBuilder fileContents = new StringBuilder();
             fileContents.Append("using UnityEditor;\n\n");
             fileContents.Append("namespace EditorPlus.Editor {\n\n");
             
-            foreach (var attributeType in attributeTypes) {
-                fileContents.Append($"\t[CustomPropertyDrawer(typeof({attributeType.FullName}))]\n");
+            foreach (var drawnType in drawnTypes) {
+                fileContents.Append($"\t[CustomPropertyDrawer(typeof({drawnType.FullName}))]\n");
             }
             fileContents.Append($"\tpublic partial class {nameof(EditorPlusPropertyDrawer)} {{ }}\n");
             fileContents.Append("}\n");

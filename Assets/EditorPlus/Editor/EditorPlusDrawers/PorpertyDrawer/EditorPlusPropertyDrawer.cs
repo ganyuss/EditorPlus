@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,7 +14,7 @@ namespace EditorPlus.Editor {
     /// <seealso cref="AttributeDrawerBase{Attr}"/>
     /// <seealso cref="DecoratorBase&lt;Attr&gt;"/>
     /// <seealso cref="DecoratorAndDrawerDatabase"/>
-    public partial class EditorPlusPropertyDrawer : PropertyDrawer {
+    public partial class EditorPlusPropertyDrawer : UnityEditor.PropertyDrawer {
 
         private List<Decorator> _decoratorsToUse;
         private List<Decorator> _decoratorsToUseReversed;
@@ -45,19 +44,12 @@ namespace EditorPlus.Editor {
             return _decoratorsToUseReversed;
         }
 
-        private Drawer GetPropertyDrawer(SerializedProperty property) {
-            if (_propertyDrawer != null)
-                return _propertyDrawer;
-
-            foreach (var drawerAttributeType in DecoratorAndDrawerDatabase.GetAllDrawerAttributeTypes()) {
-                if (HasAttribute(property, drawerAttributeType, out var currentAttribute)) {
-                    AttributeDrawer drawer = DecoratorAndDrawerDatabase.GetDrawerFor(drawerAttributeType);
-                    drawer.SetAttribute(currentAttribute);
-                    return drawer;
-                }
+        private Drawer GetPropertyDrawer() {
+            if (_propertyDrawer == null)
+            {
+                _propertyDrawer = DecoratorAndDrawerDatabase.GetDrawerFor(fieldInfo);
             }
-
-            _propertyDrawer = new DefaultDrawer();
+            
             return _propertyDrawer;
         }
 
@@ -73,7 +65,7 @@ namespace EditorPlus.Editor {
                 height += decorator.GetHeight(property);
             }
 
-            float propertyHeight = GetPropertyDrawer(property).GetHeight(property, label);
+            float propertyHeight = GetPropertyDrawer().GetHeight(property, label);
             return height + propertyHeight;
         }
 
@@ -89,20 +81,13 @@ namespace EditorPlus.Editor {
             }
 
             if (decorators.All(decorator => decorator.ShowProperty(property))) {
-                position = GetPropertyDrawer(property).OnGUI(position, property, label);
+                position = GetPropertyDrawer().OnGUI(position, property, label);
             }
 
             // We want the first decorator to be the last one called here
             foreach (var decorator in decoratorsReversed) {
                 position = decorator.OnAfterGUI(position, property);
             }
-        }
-
-
-        private static bool HasAttribute(SerializedProperty property, Type attributeType, out Attribute attribute) {
-            EditorUtils.GetMemberInfo(property, out _, out var targetMemberInfo);
-            attribute = targetMemberInfo?.GetCustomAttribute(attributeType);
-            return attribute != null;
         }
     }
 
@@ -133,7 +118,6 @@ namespace EditorPlus.Editor {
             if (label != null && label.text == null)
                 label.text = property.displayName;
 
-            //EditorGUI.DrawRect(propertyRect, Color.red);
             if (property.propertyType == SerializedPropertyType.Generic)
                 Drawer.Draw(propertyRect, property, label);
             else

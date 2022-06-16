@@ -15,7 +15,8 @@ namespace EditorPlus.Editor {
     public static class DecoratorAndDrawerDatabase {
 
         private static Dictionary<Type, Func<Decorator>> DecoratorFactoryDictionary;
-        private static Dictionary<Type, Func<AttributeDrawer>> AttrbuteDrawerFactoryDictionary;
+        private static Dictionary<Type, Func<AttributeDrawer>> AttributeDrawerFactoryDictionary;
+        private static Dictionary<Type, Func<PropertyDrawer>> PropertyDrawerFactoryDictionary;
 
         /// <summary>
         /// Return all the different decorator attribute type registered.
@@ -31,44 +32,8 @@ namespace EditorPlus.Editor {
         /// </summary>
         /// <returns>all the attributes used in a <see cref="AttributeDrawerBase&lt;Attr&gt;"/>
         /// throughout the project.</returns>
-        public static Type[] GetAllDrawerAttributeTypes() {
-            return AttrbuteDrawerFactoryDictionary.Keys.ToArray();
-        }
-
-        /// <summary>
-        /// Returns true if the given type is the type of a decorator attribute. 
-        /// </summary>
-        /// <param name="attributeType">The type to test.</param>
-        /// <returns>True if the given type is the type of a decorator attribute, otherwise false.</returns>
-        public static bool IsDecoratorAttribute(Type attributeType) {
-            return DecoratorFactoryDictionary.ContainsKey(attributeType);
-        }
-        
-        /// <summary>
-        /// Returns true if the given type is the type of a drawer attribute. 
-        /// </summary>
-        /// <param name="attributeType">The type to test.</param>
-        /// <returns>True if the given type is the type of a drawer attribute, otherwise false.</returns>
-        public static bool IsDrawerAttribute(Type attributeType) {
-            return AttrbuteDrawerFactoryDictionary.ContainsKey(attributeType);
-        }
-
-        /// <summary>
-        /// Returns an instance of the decorator class associated with the given decorator attribute type.
-        /// </summary>
-        /// <param name="attributeType">The type of the attribute.</param>
-        /// <returns>An instance of the decorator type associated with the attribute type.</returns>
-        public static Decorator GetDecoratorFor(Type attributeType) {
-            return DecoratorFactoryDictionary[attributeType].Invoke();
-        }
-
-        /// <summary>
-        /// Returns an instance of the drawer class associated with the given decorator attribute type.
-        /// </summary>
-        /// <param name="attributeType">The type of the attribute.</param>
-        /// <returns>An instance of the drawer type associated with the attribute type.</returns>
-        public static AttributeDrawer GetDrawerFor(Type attributeType) {
-            return AttrbuteDrawerFactoryDictionary[attributeType].Invoke();
+        public static Type[] GetAllDrawerTypes() {
+            return AttributeDrawerFactoryDictionary.Keys.Concat(PropertyDrawerFactoryDictionary.Keys).ToArray();
         }
 
         /// <summary>
@@ -79,7 +44,7 @@ namespace EditorPlus.Editor {
         /// <param name="decorator">Set to a decorator instance associated to the attribute type, if
         /// the attribute is a decorator attribute.</param>
         /// <returns>True if the given type is an decorator attribute, otherwise false.</returns>
-        public static bool TryGetDecoratorFor(Type attributeType, out Decorator decorator) {
+        private static bool TryGetDecoratorFor(Type attributeType, out Decorator decorator) {
             bool ok = DecoratorFactoryDictionary.TryGetValue(attributeType, out var factory);
             decorator = factory?.Invoke();
             return ok;
@@ -93,8 +58,22 @@ namespace EditorPlus.Editor {
         /// <param name="drawer">Set to a drawer instance associated to the attribute type, if
         /// the attribute is a drawer attribute.</param>
         /// <returns>True if the given type is an drawer attribute, otherwise false.</returns>
-        public static bool TryGetDrawerFor(Type attributeType, out Drawer drawer) {
-            bool ok = AttrbuteDrawerFactoryDictionary.TryGetValue(attributeType, out var factory);
+        private static bool TryGetAttributeDrawerFor(Type attributeType, out AttributeDrawer drawer) {
+            bool ok = AttributeDrawerFactoryDictionary.TryGetValue(attributeType, out var factory);
+            drawer = factory?.Invoke();
+            return ok;
+        }
+        
+        /// <summary>
+        /// If the given type has an associated property drawer, returns true and sets drawer
+        /// to an instance of the drawer class.
+        /// </summary>
+        /// <param name="propertyType">The type of the property.</param>
+        /// <param name="drawer">Set to a drawer instance associated to the property type, if
+        /// it exists.</param>
+        /// <returns>True if the given type has an associated property drawer, otherwise false.</returns>
+        private static bool TryGetPropertyDrawerFor(Type propertyType, out Drawer drawer) {
+            bool ok = PropertyDrawerFactoryDictionary.TryGetValue(propertyType, out var factory);
             drawer = factory?.Invoke();
             return ok;
         }
@@ -119,11 +98,31 @@ namespace EditorPlus.Editor {
             result.Sort((d1, d2) => d1.Order - d2.Order);
             return result;
         }
+
+        public static Drawer GetDrawerFor(FieldInfo fieldInfo)
+        {
+            if (fieldInfo is null)
+                return null;
+            
+            foreach (var attribute in fieldInfo.GetCustomAttributes()) {
+                if (TryGetAttributeDrawerFor(attribute.GetType(), out var attributeDrawer))
+                {
+                    attributeDrawer.SetAttribute(attribute);
+                    return attributeDrawer;
+                }
+            }
+
+            if (TryGetPropertyDrawerFor(fieldInfo.FieldType, out var propertyDrawer))
+                return propertyDrawer;
+
+            return new DefaultDrawer();
+        }
         
         
         static DecoratorAndDrawerDatabase() {
             DecoratorFactoryDictionary = new Dictionary<Type, Func<Decorator>>();
-            AttrbuteDrawerFactoryDictionary = new Dictionary<Type, Func<AttributeDrawer>>();
+            AttributeDrawerFactoryDictionary = new Dictionary<Type, Func<AttributeDrawer>>();
+            PropertyDrawerFactoryDictionary = new Dictionary<Type, Func<PropertyDrawer>>();
             
             Type[] DecoratorTypes = TypeUtils.GetAllTypesInheritingFrom(typeof(DecoratorBase<>));
             foreach (var decoratorType in DecoratorTypes) {
@@ -133,11 +132,19 @@ namespace EditorPlus.Editor {
                 }
             }
             
-            Type[] DrawerTypes = TypeUtils.GetAllTypesInheritingFrom(typeof(AttributeDrawerBase<>));
-            foreach (var drawerType in DrawerTypes) {
-                if (IsInstantiationValid(drawerType)) {
-                    AttributeDrawer drawer = TypeUtils.CreateInstance<AttributeDrawer>(drawerType);
-                    AttrbuteDrawerFactoryDictionary[drawer.AttributeType] = () => TypeUtils.CreateInstance<AttributeDrawer>(drawerType);
+            Type[] attributeDrawerTypes = TypeUtils.GetAllTypesInheritingFrom(typeof(AttributeDrawerBase<>));
+            foreach (var attributeDrawerType in attributeDrawerTypes) {
+                if (IsInstantiationValid(attributeDrawerType)) {
+                    AttributeDrawer drawer = TypeUtils.CreateInstance<AttributeDrawer>(attributeDrawerType);
+                    AttributeDrawerFactoryDictionary[drawer.AttributeType] = () => TypeUtils.CreateInstance<AttributeDrawer>(attributeDrawerType);
+                }
+            }
+            
+            Type[] propertyDrawerTypes = TypeUtils.GetAllTypesInheritingFrom(typeof(PropertyDrawerBase<>));
+            foreach (var propertyDrawerType in propertyDrawerTypes) {
+                if (IsInstantiationValid(propertyDrawerType)) {
+                    PropertyDrawer drawer = TypeUtils.CreateInstance<PropertyDrawer>(propertyDrawerType);
+                    PropertyDrawerFactoryDictionary[drawer.TargetType] = () => TypeUtils.CreateInstance<PropertyDrawer>(propertyDrawerType);
                 }
             }
         }

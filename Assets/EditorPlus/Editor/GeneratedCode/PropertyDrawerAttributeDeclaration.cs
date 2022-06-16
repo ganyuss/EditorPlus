@@ -19,5 +19,6 @@ namespace EditorPlus.Editor {
 	[CustomPropertyDrawer(typeof(EditorPlus.MinMaxSliderAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.TagAttribute))]
 	[CustomPropertyDrawer(typeof(EditorPlus.Editor.DefaultPropertyAttribute))]
+	[CustomPropertyDrawer(typeof(EditorPlus.StaticUnityEventInvoker))]
 	public partial class EditorPlusPropertyDrawer { }
 }

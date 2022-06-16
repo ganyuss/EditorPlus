@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using EditorPlus.Editor;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -23,14 +20,16 @@ namespace EditorPlus.Editor {
         private ReorderableList InnerList;
         private SerializedProperty CurrentProperty;
 
+        private GUIContent currentGuiContent;
+
         private bool? EditingMultipleValue;
         private int? ListCount;
         
-        private bool ShowFocus = true;
-        private bool AlwaysExpanded = false;
+        public bool ShowFocus = true;
+        public bool AlwaysExpanded = false;
         
-        private bool AddMethodError = false;
-        private bool RemoveMethodError = false;
+        public bool AddMethodError = false;
+        public bool RemoveMethodError = false;
         
         private string AddMethodErrorText = "The method name provided as AddMethod in the BetterList attribute " +
                                             "is incorrect. The name must point to a method without any arguments.";
@@ -187,6 +186,7 @@ namespace EditorPlus.Editor {
         public Rect OnGUI(Rect position, SerializedProperty property, GUIContent label) {
             
             UpdateProperty(property);
+            currentGuiContent = label;
 
             Rect listRect = new Rect(position) {height = GetHeight(property, label)};
             
@@ -233,10 +233,13 @@ namespace EditorPlus.Editor {
 
             int indentLevel = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
+            
+            currentGuiContent ??= new GUIContent(CurrentProperty.displayName);
             if (! AlwaysExpanded)
-                InnerList.serializedProperty.isExpanded = EditorGUI.Foldout(headerRect, InnerList.serializedProperty.isExpanded, CurrentProperty.displayName, true);
+                InnerList.serializedProperty.isExpanded = EditorGUI.Foldout(headerRect, InnerList.serializedProperty.isExpanded, currentGuiContent, true);
             else 
-                EditorGUI.LabelField(headerRect, CurrentProperty.displayName);
+                EditorGUI.LabelField(headerRect, currentGuiContent);
+            
             EditorGUI.indentLevel = indentLevel;
         }
         

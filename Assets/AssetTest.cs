@@ -16,6 +16,8 @@ public class AssetTest : ScriptableObject {
     [MinMaxSlider(0, 20)]
     public MinMaxInt MinMax;
 
+    public StaticUnityEventInvoker Invoker;
+
     [TextArea(2, 3)]
     public string TextArea;
     [Multiline(5)]
